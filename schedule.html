@@ -233,19 +233,19 @@
         <div class="fare-grid">
           <div class="fare-item">
             <strong>Single Ride</strong>
-            <span>$2.50</span>
+            <span>₹2.50</span>
           </div>
           <div class="fare-item">
             <strong>Day Pass</strong>
-            <span>$7.00</span>
+            <span>₹7.00</span>
           </div>
           <div class="fare-item">
             <strong>Weekly Pass</strong>
-            <span>$25.00</span>
+            <span>₹25.00</span>
           </div>
           <div class="fare-item">
             <strong>Monthly Pass</strong>
-            <span>$80.00</span>
+            <span>₹80.00</span>
           </div>
         </div>
       </div>
@@ -314,7 +314,7 @@
         if (this.value === 'inbound') {
           // Reverse the arrow
           const parts = routePath.textContent.split(' → ');
-          routePath.textContent = `${parts[1]} → ${parts[0]}`;
+          routePath.textContent = `₹{parts[1]} → ₹{parts[0]}`;
         } else {
           routePath.textContent = route.path;
         }
