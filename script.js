@@ -332,6 +332,63 @@ document.addEventListener('DOMContentLoaded', function() {
   // addSwapButton();
 
   // ===================================
+  // LOCATION BANNER INTERACTION
+  // ===================================
+  const locationBanner = document.querySelector('.location-banner');
+  
+  if (locationBanner) {
+    locationBanner.addEventListener('click', function() {
+      if ("geolocation" in navigator) {
+        const locationText = this.querySelector('.location-text span');
+        const originalText = locationText.innerHTML;
+        
+        locationText.innerHTML = '<strong>📍 Getting your location...</strong>';
+        this.style.opacity = '0.7';
+        
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            locationText.innerHTML = '<strong>✓ Location updated!</strong>';
+            
+            setTimeout(() => {
+              window.location.href = `nearby-stops.html?lat=${lat}&lon=${lon}&updated=true`;
+            }, 800);
+          },
+          function(error) {
+            alert('Unable to get your location. Please enable location services.');
+            locationText.innerHTML = originalText;
+            locationBanner.style.opacity = '1';
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by your browser.');
+      }
+    });
+  }
+
+  // ===================================
+  // VIEW SCHEDULE BUTTONS
+  // ===================================
+  const viewScheduleBtns = document.querySelectorAll('.view-schedule-btn');
+  
+  viewScheduleBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const routeNum = this.dataset.route;
+      
+      // Show loading state
+      this.textContent = 'Loading...';
+      this.disabled = true;
+      this.style.opacity = '0.7';
+      
+      setTimeout(() => {
+        window.location.href = `schedule.html?route=${routeNum}`;
+      }, 500);
+    });
+  });
+
+  // ===================================
   // ANALYTICS / TRACKING (Optional)
   // ===================================
   function trackEvent(category, action, label) {
