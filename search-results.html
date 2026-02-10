@@ -50,77 +50,226 @@
       </ul>
     </nav>
 
-    <section class="main-card" style="margin-top: 40px;">
-      <h1>🚌 Your Bus Routes</h1>
-      <div id="route-info" style="margin: 20px 0; padding: 15px; background: #f3faf7; border-radius: 10px;">
-        <p><strong>From:</strong> <span id="from-location"></span></p>
-        <p><strong>To:</strong> <span id="to-location"></span></p>
+    <section class="main-card search-results-section" style="margin-top: 40px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+      
+      <!-- Page Header -->
+      <div class="search-results-header">
+        <div class="header-icon-bus">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="#43866B">
+            <rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 9h18M7 17v2M17 17v2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="page-title" style="margin: 0;">Best Bus Routes to <span id="destination-name">Your Destination</span></h1>
+          <p class="search-subtitle">
+            <span class="loading-dots">Finding the best routes for you</span>
+          </p>
+        </div>
       </div>
-      
-      <h2>Recommended Routes</h2>
-      
-      <div style="margin-top: 20px;">
-        <div class="route-card" style="border-left: 4px solid #43866B;">
-          <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-              <h3>🚌 Route 1: Direct Route</h3>
-              <p><strong>Bus 45</strong> → <strong>Bus 12</strong></p>
-              <p>📍 Board at: Main Street (2 min walk)</p>
-              <p>📍 Transfer at: City Center</p>
-              <p>📍 Arrive at: Your Destination (3 min walk)</p>
-            </div>
-            <div style="text-align: right;">
-              <div style="font-size: 24px; color: #43866B; font-weight: bold;">28 min</div>
-              <div style="font-size: 14px; color: #666;">Fastest</div>
-            </div>
-          </div>
-          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #d6e2dc;">
-            <p><strong>Next bus:</strong> 5 minutes | <strong>Fare:</strong> $2.50</p>
+
+      <!-- Route Summary -->
+      <div class="route-summary">
+        <div class="location-point from-point">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <circle cx="12" cy="12" r="8" fill="#5aa9a1" stroke="#5aa9a1" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" fill="white"/>
+          </svg>
+          <div>
+            <strong>From: YOU ARE HERE</strong>
+            <p id="from-location-detail">(Current Location: Main Street & 5th Ave)</p>
           </div>
         </div>
         
-        <div class="route-card">
-          <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-              <h3>🚌 Route 2: Scenic Route</h3>
-              <p><strong>Bus 23</strong> → <strong>Bus 67</strong></p>
-              <p>📍 Board at: Park Avenue (5 min walk)</p>
-              <p>📍 Transfer at: Market Square</p>
-              <p>📍 Arrive at: Your Destination (1 min walk)</p>
-            </div>
-            <div style="text-align: right;">
-              <div style="font-size: 24px; color: #666; font-weight: bold;">35 min</div>
-              <div style="font-size: 14px; color: #666;">Fewer stops</div>
-            </div>
-          </div>
-          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #d6e2dc;">
-            <p><strong>Next bus:</strong> 12 minutes | <strong>Fare:</strong> $2.50</p>
+        <div class="location-point to-point">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z" fill="#c65d5d" stroke="#c65d5d" stroke-width="2"/>
+            <circle cx="12" cy="8" r="3" fill="white"/>
+          </svg>
+          <div>
+            <strong>To: <span id="to-location-name">Central Park</span></strong>
           </div>
         </div>
+      </div>
+
+      <!-- Recommended Route Card -->
+      <div class="recommended-route-card">
+        <div class="route-badge">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#5aa9a1" stroke="#5aa9a1" stroke-width="2"/>
+            <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Recommended Route</span>
+        </div>
+
+        <!-- Bus Route Overview -->
+        <div class="bus-route-overview">
+          <div class="bus-route-left">
+            <div class="bus-icon-text">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                <rect x="5" y="6" width="14" height="12" rx="2" fill="#43866B" stroke="#43866B" stroke-width="1.5"/>
+                <rect x="7" y="9" width="4" height="4" rx="0.5" fill="white"/>
+                <rect x="13" y="9" width="4" height="4" rx="0.5" fill="white"/>
+                <circle cx="9" cy="19" r="1.5" fill="#43866B"/>
+                <circle cx="15" cy="19" r="1.5" fill="#43866B"/>
+              </svg>
+              <span>Take:</span>
+            </div>
+            <div class="route-buses">
+              <div class="route-bus-badge orange">45</div>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#718096" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+              <div class="route-bus-badge green">12</div>
+            </div>
+          </div>
+          
+          <div class="bus-route-right">
+            <div class="route-time">28 min</div>
+            <div class="route-time-label">Fastest</div>
+          </div>
+        </div>
+
+        <!-- Bus Arrival Info -->
+        <div class="bus-arrival-info">
+          <div class="arrival-item">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="#43866B" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke="#43866B" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Bus arriving in <strong>5 minutes</strong></span>
+          </div>
+          <div class="arrival-divider">•</div>
+          <div class="arrival-item">
+            <span>Fare: 💵 <strong>$2.50</strong></span>
+          </div>
+        </div>
+
+        <!-- Route Steps Timeline -->
+        <div class="route-steps">
+          
+          <!-- Step 1: Board -->
+          <div class="route-step">
+            <div class="step-indicator">
+              <div class="step-icon board-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                  <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z" fill="white" stroke="white" stroke-width="2"/>
+                  <circle cx="12" cy="8" r="3" fill="#5aa9a1"/>
+                </svg>
+              </div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h4>Main Street</h4>
+              <p>Board here (2 min walk)</p>
+            </div>
+          </div>
+
+          <!-- Step 2: Transfer -->
+          <div class="route-step">
+            <div class="step-indicator">
+              <div class="step-icon transfer-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                  <circle cx="12" cy="12" r="10" fill="white" stroke="white" stroke-width="2"/>
+                  <path d="M8 12h8M12 8v8" stroke="#5aa9a1" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h4>City Center</h4>
+              <p>Transfer (1 min wait)</p>
+            </div>
+          </div>
+
+          <!-- Step 3: Arrive -->
+          <div class="route-step">
+            <div class="step-indicator">
+              <div class="step-icon arrive-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+                  <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="white" stroke="white" stroke-width="2"/>
+                  <circle cx="12" cy="10" r="2" fill="#c65d5d"/>
+                </svg>
+              </div>
+            </div>
+            <div class="step-content">
+              <h4>Central Park</h4>
+              <p>Arrive at your destination (3 min walk)</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Next Bus Timer -->
+        <div class="next-bus-timer">
+          <span class="timer-label">Bus arriving in</span>
+          <div class="timer-dots">
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <span class="timer-value">5 minutes • Fare: $2.50</span>
+        </div>
+
+      </div>
+
+      <!-- Alternative Routes -->
+      <div class="alternative-routes">
+        <h3 class="alternatives-title">Alternative Routes</h3>
         
-        <div class="route-card">
-          <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-              <h3>🚌 Route 3: Express Route</h3>
-              <p><strong>Bus 89 Express</strong></p>
-              <p>📍 Board at: Central Terminal (8 min walk)</p>
-              <p>📍 Direct - No transfers!</p>
-              <p>📍 Arrive at: Your Destination</p>
+        <!-- Alternative Route 1 -->
+        <div class="alt-route-card">
+          <div class="alt-route-header">
+            <div class="alt-buses">
+              <div class="route-bus-badge purple">23</div>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#718096" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+              <div class="route-bus-badge purple">67</div>
             </div>
-            <div style="text-align: right;">
-              <div style="font-size: 24px; color: #666; font-weight: bold;">32 min</div>
-              <div style="font-size: 14px; color: #666;">No transfers</div>
-            </div>
+            <div class="alt-time">35 min</div>
           </div>
-          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #d6e2dc;">
-            <p><strong>Next bus:</strong> 18 minutes | <strong>Fare:</strong> $3.50 (Express)</p>
-          </div>
+          <p class="alt-route-description">Park Avenue → Market Square → Destination</p>
+          <button class="view-details-btn" onclick="toggleRouteDetails(this)">View Details ›</button>
         </div>
+
+        <!-- Alternative Route 2 -->
+        <div class="alt-route-card">
+          <div class="alt-route-header">
+            <div class="alt-buses">
+              <div class="route-bus-badge blue">89</div>
+            </div>
+            <div class="alt-time">32 min</div>
+          </div>
+          <p class="alt-route-description">Express - Direct (No transfers!)</p>
+          <button class="view-details-btn" onclick="toggleRouteDetails(this)">View Details ›</button>
+        </div>
+
       </div>
-      
-      <div style="margin-top: 30px; text-align: center;">
-        <button class="search-btn" onclick="window.location.href='index.html'">Search Again</button>
+
+      <!-- Action Buttons -->
+      <div class="search-actions">
+        <button class="action-btn secondary-btn" onclick="window.location.href='index.html'">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Search Again
+        </button>
+        <button class="action-btn primary-btn" onclick="startNavigation()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Start Navigation
+        </button>
       </div>
+
     </section>
   </div>
   
@@ -128,11 +277,171 @@
   <script>
     // Parse URL parameters and display route info
     const params = new URLSearchParams(window.location.search);
-    const fromLocation = params.get('from') || 'Unknown';
-    const toLocation = params.get('to') || 'Unknown';
+    const fromLocation = params.get('from') || 'Your Current Location';
+    const toLocation = params.get('to') || params.get('destination') || 'Central Park';
     
-    document.getElementById('from-location').textContent = fromLocation;
-    document.getElementById('to-location').textContent = toLocation;
+    document.getElementById('destination-name').textContent = toLocation;
+    document.getElementById('to-location-name').textContent = toLocation;
+    
+    // Simulate loading animation
+    const loadingDots = document.querySelector('.loading-dots');
+    if (loadingDots) {
+      let dotCount = 3;
+      const loadingInterval = setInterval(() => {
+        dotCount = (dotCount % 3) + 1;
+        loadingDots.textContent = 'Finding the best routes for you' + '.'.repeat(dotCount);
+      }, 500);
+      
+      // Stop loading after 2 seconds
+      setTimeout(() => {
+        clearInterval(loadingInterval);
+        loadingDots.textContent = 'Found 3 routes for you';
+        loadingDots.style.color = '#43866B';
+      }, 2000);
+    }
+    
+    // Toggle route details
+    function toggleRouteDetails(button) {
+      const card = button.closest('.alt-route-card');
+      const details = card.querySelector('.route-details-expanded');
+      
+      if (details) {
+        details.remove();
+        button.textContent = 'View Details ›';
+      } else {
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'route-details-expanded';
+        detailsDiv.innerHTML = `
+          <div class="detail-step">
+            <strong>Step 1:</strong> Board at Park Avenue (5 min walk)
+          </div>
+          <div class="detail-step">
+            <strong>Step 2:</strong> Transfer at Market Square (2 min wait)
+          </div>
+          <div class="detail-step">
+            <strong>Step 3:</strong> Arrive at ${toLocation} (1 min walk)
+          </div>
+        `;
+        card.appendChild(detailsDiv);
+        button.textContent = 'Hide Details ‹';
+      }
+    }
+    
+    // Start navigation function
+    function startNavigation() {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: white;
+          padding: 40px;
+          border-radius: 16px;
+          text-align: center;
+          max-width: 400px;
+          animation: slideUp 0.3s ease;
+        ">
+          <div style="font-size: 48px; margin-bottom: 20px;">🚌</div>
+          <h2 style="margin: 0 0 10px 0; color: #1a202c;">Navigation Started!</h2>
+          <p style="color: #718096; margin: 0 0 20px 0;">
+            Get ready to board Bus 45 at Main Street in 5 minutes
+          </p>
+          <button onclick="this.closest('div').remove()" style="
+            background: #43866B;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+          ">Got it!</button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
+    
+    // Animate timer dots
+    const timerDots = document.querySelectorAll('.timer-dots .dot');
+    let activeDotCount = 3;
+    
+    setInterval(() => {
+      timerDots.forEach((dot, index) => {
+        if (index < activeDotCount) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+      
+      activeDotCount--;
+      if (activeDotCount < 1) activeDotCount = 10;
+    }, 1000);
+    
+    // Animate card entrance
+    window.addEventListener('load', function() {
+      const mainCard = document.querySelector('.recommended-route-card');
+      const altCards = document.querySelectorAll('.alt-route-card');
+      
+      if (mainCard) {
+        mainCard.style.opacity = '0';
+        mainCard.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          mainCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          mainCard.style.opacity = '1';
+          mainCard.style.transform = 'translateY(0)';
+        }, 300);
+      }
+      
+      altCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateX(0)';
+        }, 500 + (index * 150));
+      });
+    });
   </script>
+  
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { 
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
 </body>
 </html>
