@@ -98,7 +98,7 @@
             </div>
             <div class="tourist-details">
               <p class="nearest-stop"><strong>Nearest stop:</strong> Museum District</p>
-              <p class="tourist-hours">Open: 9 AM - 6 PM | Entry: $10</p>
+              <p class="tourist-hours">Open: 9 AM - 6 PM | Entry: ₹10</p>
             </div>
             <button class="tourist-btn" onclick="showBusDirections('City Museum', [12, 34, 56], 'Museum District')">
               See How to Go by Bus
@@ -260,7 +260,7 @@
         <div class="modal-info">
           <p><strong>📍 Nearest Bus Stop:</strong> <span id="modalNearestStop">Museum District</span></p>
           <p><strong>⏱️ Frequency:</strong> Buses every 15-20 minutes</p>
-          <p><strong>💵 Fare:</strong> $2.50 single ride</p>
+          <p><strong>💵 Fare:</strong> ₹2.50 single ride</p>
         </div>
         
         <div class="modal-actions">
@@ -314,12 +314,12 @@
       loading.innerHTML = `
         <div style="font-size: 24px; margin-bottom: 10px;">🚌</div>
         <div style="font-size: 16px; font-weight: 600; color: #1a202c;">Planning your route...</div>
-        <div style="font-size: 14px; color: #718096; margin-top: 5px;">To ${placeName}</div>
+        <div style="font-size: 14px; color: #718096; margin-top: 5px;">To ₹{placeName}</div>
       `;
       document.body.appendChild(loading);
       
       setTimeout(() => {
-        window.location.href = `index.html?destination=${encodeURIComponent(placeName)}`;
+        window.location.href = `index.html?destination=₹{encodeURIComponent(placeName)}`;
       }, 1500);
     }
     
