@@ -113,20 +113,29 @@
                 <circle cx="9" cy="19" r="1.5" fill="#43866B"/>
                 <circle cx="15" cy="19" r="1.5" fill="#43866B"/>
               </svg>
-              <span>Take:</span>
+              <span>Route:</span>
             </div>
-            <div class="route-buses">
-              <div class="route-bus-badge orange">45</div>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#718096" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-              <div class="route-bus-badge green">12</div>
+            <div class="route-buses-container">
+              <div class="bus-item">
+                <div class="route-bus-badge orange">45</div>
+                <span class="bus-label">Board Bus 45</span>
+              </div>
+              <div class="transfer-arrow">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#718096" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span class="transfer-label">Transfer</span>
+              </div>
+              <div class="bus-item">
+                <div class="route-bus-badge green">12</div>
+                <span class="bus-label">Transfer to Bus 12</span>
+              </div>
             </div>
           </div>
           
           <div class="bus-route-right">
             <div class="route-time">28 min</div>
-            <div class="route-time-label">Fastest</div>
+            <div class="route-time-label">Total time</div>
           </div>
         </div>
 
@@ -229,14 +238,12 @@
           <div class="alt-route-header">
             <div class="alt-buses">
               <div class="route-bus-badge purple">23</div>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#718096" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+              <span class="then-text">then</span>
               <div class="route-bus-badge purple">67</div>
             </div>
             <div class="alt-time">35 min</div>
           </div>
-          <p class="alt-route-description">Park Avenue → Market Square → Destination</p>
+          <p class="alt-route-description">2 transfers • Park Avenue → Market Square → Destination</p>
           <button class="view-details-btn" onclick="toggleRouteDetails(this)">View Details ›</button>
         </div>
 
@@ -245,10 +252,11 @@
           <div class="alt-route-header">
             <div class="alt-buses">
               <div class="route-bus-badge blue">89</div>
+              <span class="direct-badge">Direct</span>
             </div>
             <div class="alt-time">32 min</div>
           </div>
-          <p class="alt-route-description">Express - Direct (No transfers!)</p>
+          <p class="alt-route-description">No transfers! Express route</p>
           <button class="view-details-btn" onclick="toggleRouteDetails(this)">View Details ›</button>
         </div>
 
