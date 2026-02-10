@@ -33,7 +33,7 @@
           </svg>
           Bus Routes
         </a></li>
-        <li><a href="tourist-places.html" class="nav-link">
+        <li><a href="tourist-places.html" class="nav-link active" data-page="tourist-places">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
             <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
@@ -50,49 +50,307 @@
       </ul>
     </nav>
 
-    <section class="main-card" style="margin-top: 40px;">
-      <h1>🗺️ Tourist Places Near You</h1>
-      <p>Discover popular attractions and how to reach them by bus</p>
+    <section class="main-card tourist-section" style="margin-top: 40px; max-width: 1200px; margin-left: auto; margin-right: auto;">
       
-      <div class="content-grid" style="margin-top: 30px;">
-        <div>
-          <div class="route-card">
-            <h3>🏛️ City Museum</h3>
-            <p><strong>How to reach:</strong> Take bus 12, 34, or 56</p>
-            <p><strong>Nearest stop:</strong> Museum District</p>
-            <p>Open: 9 AM - 6 PM | Entry: $10</p>
-            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
-          </div>
-          
-          <div class="route-card">
-            <h3>🌳 Central Park</h3>
-            <p><strong>How to reach:</strong> Take bus 23, 45, or 67</p>
-            <p><strong>Nearest stop:</strong> Park Avenue</p>
-            <p>Open: 24 hours | Entry: Free</p>
-            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
-          </div>
+      <!-- Page Header -->
+      <div class="tourist-header">
+        <div class="header-icon">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="#43866B">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+          </svg>
         </div>
-        
         <div>
-          <div class="route-card">
-            <h3>🏰 Old Town Square</h3>
-            <p><strong>How to reach:</strong> Take bus 11, 22, or 89</p>
-            <p><strong>Nearest stop:</strong> Old Town</p>
-            <p>Historic district with shops and cafes</p>
-            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
-          </div>
-          
-          <div class="route-card">
-            <h3>📚 Grand Library</h3>
-            <p><strong>How to reach:</strong> Take bus 34, 78, or 90</p>
-            <p><strong>Nearest stop:</strong> Library Square</p>
-            <p>Open: 8 AM - 8 PM | Free admission</p>
-            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
-          </div>
+          <h1 class="page-title" style="margin: 0;">Tourist Places Near You</h1>
+          <p class="tourist-subtitle">Showing popular places near your location</p>
         </div>
       </div>
+
+      <!-- Info Banner -->
+      <div class="tourist-info-banner">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#43866B" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        <div>
+          <strong>Showing popular places near your location</strong>
+          <p>All places are reachable by public bus</p>
+        </div>
+      </div>
+      
+      <!-- Tourist Places Grid -->
+      <div class="tourist-grid">
+        
+        <!-- Place 1: City Museum -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="city_museum.png" alt="City Museum">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>City Museum</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">12</span>
+                <span class="bus-badge">34</span>
+                <span class="bus-badge">56</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Museum District</p>
+              <p class="tourist-hours">Open: 9 AM - 6 PM | Entry: $10</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('City Museum', [12, 34, 56], 'Museum District')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- Place 2: Old Town Square -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="old_town_square.png" alt="Old Town Square">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Old Town Square</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">11</span>
+                <span class="bus-badge">22</span>
+                <span class="bus-badge">89</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Old Town</p>
+              <p class="tourist-hours">Historic district with shops and cafes</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Old Town Square', [11, 22, 89], 'Old Town')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- Place 3: Central Park -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=400&h=250&fit=crop" alt="Central Park">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Central Park</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">23</span>
+                <span class="bus-badge">45</span>
+                <span class="bus-badge">67</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Park Avenue</p>
+              <p class="tourist-hours">Open: 24 hours | Entry: Free</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Central Park', [23, 45, 67], 'Park Avenue')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- Place 4: Grand Library -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&h=250&fit=crop" alt="Grand Library">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Grand Library</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">34</span>
+                <span class="bus-badge">78</span>
+                <span class="bus-badge">90</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Library Square</p>
+              <p class="tourist-hours">Open: 8 AM - 8 PM | Free admission</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Grand Library', [34, 78, 90], 'Library Square')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- Place 5: Lake View Park -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="Lake View Park">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Lake View Park</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">15</span>
+                <span class="bus-badge">25</span>
+                <span class="bus-badge">35</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Lake View Station</p>
+              <p class="tourist-hours">Open: 6 AM - 10 PM | Free entry</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Lake View Park', [15, 25, 35], 'Lake View Station')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- Place 6: Shopping Mall -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=400&h=250&fit=crop" alt="Shopping Mall">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>East Garden Mall</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">8</span>
+                <span class="bus-badge">18</span>
+                <span class="bus-badge">28</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Shopping Mall Entrance</p>
+              <p class="tourist-hours">Open: 10 AM - 10 PM | Shopping & dining</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('East Garden Mall', [8, 18, 28], 'Shopping Mall Entrance')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+      </div>
+
     </section>
   </div>
+  
+  <!-- Modal for Bus Directions -->
+  <div id="directionsModal" class="directions-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeDirectionsModal()">×</button>
+      <div class="modal-header">
+        <h2 id="modalPlaceName">City Museum</h2>
+        <p class="modal-subtitle">How to reach by public bus</p>
+      </div>
+      
+      <div class="modal-body">
+        <p style="margin-bottom: 10px;"><strong>Available Bus Routes:</strong></p>
+        <div class="modal-buses" id="modalBusList">
+          <!-- Bus badges will be inserted here -->
+        </div>
+        
+        <div class="modal-info">
+          <p><strong>📍 Nearest Bus Stop:</strong> <span id="modalNearestStop">Museum District</span></p>
+          <p><strong>⏱️ Frequency:</strong> Buses every 15-20 minutes</p>
+          <p><strong>💵 Fare:</strong> $2.50 single ride</p>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-primary" onclick="planRoute()">Plan My Route</button>
+          <button class="modal-btn modal-btn-secondary" onclick="closeDirectionsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <script src="script.js"></script>
+  <script>
+    // Modal functionality for tourist places
+    function showBusDirections(placeName, busNumbers, nearestStop) {
+      const modal = document.getElementById('directionsModal');
+      const modalPlaceName = document.getElementById('modalPlaceName');
+      const modalBusList = document.getElementById('modalBusList');
+      const modalNearestStop = document.getElementById('modalNearestStop');
+      
+      // Update modal content
+      modalPlaceName.textContent = placeName;
+      modalNearestStop.textContent = nearestStop;
+      
+      // Clear and populate bus badges
+      modalBusList.innerHTML = '';
+      busNumbers.forEach(num => {
+        const badge = document.createElement('div');
+        badge.className = 'modal-bus-badge';
+        badge.textContent = num;
+        modalBusList.appendChild(badge);
+      });
+      
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDirectionsModal() {
+      const modal = document.getElementById('directionsModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    function planRoute() {
+      const placeName = document.getElementById('modalPlaceName').textContent;
+      closeDirectionsModal();
+      
+      // Show loading message
+      const loading = document.createElement('div');
+      loading.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 50px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 2000; text-align: center;';
+      loading.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 10px;">🚌</div>
+        <div style="font-size: 16px; font-weight: 600; color: #1a202c;">Planning your route...</div>
+        <div style="font-size: 14px; color: #718096; margin-top: 5px;">To ${placeName}</div>
+      `;
+      document.body.appendChild(loading);
+      
+      setTimeout(() => {
+        window.location.href = `index.html?destination=${encodeURIComponent(placeName)}`;
+      }, 1500);
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('directionsModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeDirectionsModal();
+      }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDirectionsModal();
+      }
+    });
+    
+    // Animate cards on page load
+    window.addEventListener('load', function() {
+      const cards = document.querySelectorAll('.tourist-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    });
+  </script>
 </body>
 </html>
