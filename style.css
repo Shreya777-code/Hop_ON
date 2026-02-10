@@ -973,3 +973,367 @@ body {
     flex-direction: column;
   }
 }
+
+/* =========================
+   TOURIST PLACES PAGE STYLES
+========================= */
+.tourist-section {
+  padding: 30px;
+}
+
+.tourist-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.header-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #e8f5f1 0%, #d0e8df 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tourist-subtitle {
+  color: #718096;
+  font-size: 15px;
+  margin: 5px 0 0 0;
+}
+
+.tourist-info-banner {
+  background: linear-gradient(135deg, #e8f5f1 0%, #f3faf7 100%);
+  border-left: 4px solid #43866B;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.tourist-info-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tourist-info-banner strong {
+  display: block;
+  color: #1a202c;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.tourist-info-banner p {
+  margin: 0;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.tourist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 25px;
+  margin-top: 25px;
+}
+
+.tourist-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.tourist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(67, 134, 107, 0.15);
+}
+
+.tourist-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f7fafc;
+}
+
+.tourist-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tourist-card:hover .tourist-image img {
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%);
+}
+
+.tourist-content {
+  padding: 20px;
+}
+
+.tourist-content h3 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.tourist-meta {
+  margin-bottom: 15px;
+}
+
+.bus-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bus-badge {
+  background: #43866B;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+}
+
+.tourist-details {
+  margin-bottom: 15px;
+}
+
+.tourist-details p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.nearest-stop {
+  color: #2d3748 !important;
+}
+
+.nearest-stop strong {
+  color: #1a202c;
+}
+
+.tourist-hours {
+  color: #718096 !important;
+  font-size: 13px !important;
+}
+
+.tourist-btn {
+  width: 100%;
+  background: #43866B;
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 5px;
+}
+
+.tourist-btn:hover {
+  background: #3a775f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 134, 107, 0.3);
+}
+
+.tourist-btn:active {
+  transform: translateY(0);
+}
+
+.uses-public-bus {
+  text-align: center;
+  font-size: 12px;
+  color: #a0aec0;
+  margin: 10px 0 0 0;
+  font-style: italic;
+}
+
+@media (max-width: 1200px) {
+  .tourist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .tourist-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tourist-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .tourist-info-banner {
+    flex-direction: column;
+  }
+}
+
+/* Modal for bus directions */
+.directions-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.directions-modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #f7fafc;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  color: #4a5568;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #e2e8f0;
+  color: #1a202c;
+}
+
+.modal-header {
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  color: #1a202c;
+}
+
+.modal-subtitle {
+  color: #718096;
+  font-size: 14px;
+  margin: 0;
+}
+
+.modal-buses {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.modal-bus-badge {
+  background: #43866B;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.modal-info {
+  background: #f7fafc;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.modal-info p {
+  margin: 8px 0;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.modal-info strong {
+  color: #1a202c;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.modal-btn-primary {
+  background: #43866B;
+  color: white;
+}
+
+.modal-btn-primary:hover {
+  background: #3a775f;
+}
+
+.modal-btn-secondary {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.modal-btn-secondary:hover {
+  background: #cbd5e0;
+}
