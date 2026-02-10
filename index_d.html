@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>City Bus Finder</title>
+  <link rel="stylesheet" href="style_d.css" />
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-overlay">
+        <h1>Find the Right Bus.<br>Right Now.</h1>
+        <p>See where your bus is and where it goes</p>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT CARD -->
+    <section class="main-card">
+
+      <!-- PRIMARY ACTION BUTTON -->
+      <button class="primary-action">
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#43866B"/>
+            <circle cx="12" cy="9" r="2.5" fill="white"/>
+          </svg>
+        </div>
+        <div class="action-text">
+          <h2>Bus Stops Near Me</h2>
+          <p>Shows bus stops around your location</p>
+        </div>
+        <div class="action-arrow">›</div>
+      </button>
+
+      <!-- FROM TO SEARCH -->
+      <div class="route-search">
+        <div class="search-heading">
+          <h3>Where are you going?</h3>
+          <div class="map-link">Map of Places Around Me</div>
+        </div>
+        
+        <div class="input-group">
+          <div class="input-field">
+            <label>Start</label>
+            <input type="text" placeholder="My Location">
+          </div>
+          <div class="input-field">
+            <label>End</label>
+            <input type="text" placeholder="Enter destination">
+          </div>
+        </div>
+
+        <button class="search-button">SHOW BUSES</button>
+      </div>
+
+      <!-- TOURIST PLACES SECTION -->
+      <div class="places-section">
+        <h3>Famous Places Near You</h3>
+        
+        <div class="place-card">
+          <div class="place-info">
+            <h4>City Temple</h4>
+            <p>Take Bus 307 • 10 mins</p>
+          </div>
+          <button class="place-button">SHOW BUSES</button>
+        </div>
+        
+        <!-- Additional place cards can be added here -->
+      </div>
+
+      <!-- TRUST STRIP -->
+      <div class="trust-strip">
+        <div class="trust-item">📍 Live location</div>
+        <div class="trust-item">🚌 Official bus routes</div>
+        <div class="trust-item">➡️ Easy directions</div>
+      </div>
+
+    </section>
+
+  </div>
+
+</body>
+</html>

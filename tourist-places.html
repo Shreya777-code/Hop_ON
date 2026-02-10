@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tourist Places - City Bus Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"
+                  fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a></li>
+        <li><a href="nearby-stops.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z"
+                  fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Nearby Bus Stops
+        </a></li>
+        <li><a href="bus-routes.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 9h18M7 17v2M17 17v2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Bus Routes
+        </a></li>
+        <li><a href="tourist-places.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Tourist Places Near Me
+        </a></li>
+        <li><a href="help.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3V14 M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Help
+        </a></li>
+      </ul>
+    </nav>
+
+    <section class="main-card" style="margin-top: 40px;">
+      <h1>🗺️ Tourist Places Near You</h1>
+      <p>Discover popular attractions and how to reach them by bus</p>
+      
+      <div class="content-grid" style="margin-top: 30px;">
+        <div>
+          <div class="route-card">
+            <h3>🏛️ City Museum</h3>
+            <p><strong>How to reach:</strong> Take bus 12, 34, or 56</p>
+            <p><strong>Nearest stop:</strong> Museum District</p>
+            <p>Open: 9 AM - 6 PM | Entry: $10</p>
+            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
+          </div>
+          
+          <div class="route-card">
+            <h3>🌳 Central Park</h3>
+            <p><strong>How to reach:</strong> Take bus 23, 45, or 67</p>
+            <p><strong>Nearest stop:</strong> Park Avenue</p>
+            <p>Open: 24 hours | Entry: Free</p>
+            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
+          </div>
+        </div>
+        
+        <div>
+          <div class="route-card">
+            <h3>🏰 Old Town Square</h3>
+            <p><strong>How to reach:</strong> Take bus 11, 22, or 89</p>
+            <p><strong>Nearest stop:</strong> Old Town</p>
+            <p>Historic district with shops and cafes</p>
+            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
+          </div>
+          
+          <div class="route-card">
+            <h3>📚 Grand Library</h3>
+            <p><strong>How to reach:</strong> Take bus 34, 78, or 90</p>
+            <p><strong>Nearest stop:</strong> Library Square</p>
+            <p>Open: 8 AM - 8 PM | Free admission</p>
+            <button class="search-btn" style="margin-top: 15px;" onclick="window.location.href='index.html'">Get Directions</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

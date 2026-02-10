@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Results - City Bus Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"
+                  fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a></li>
+        <li><a href="nearby-stops.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z"
+                  fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Nearby Bus Stops
+        </a></li>
+        <li><a href="bus-routes.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 9h18M7 17v2M17 17v2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Bus Routes
+        </a></li>
+        <li><a href="tourist-places.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Tourist Places Near Me
+        </a></li>
+        <li><a href="help.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3V14 M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Help
+        </a></li>
+      </ul>
+    </nav>
+
+    <section class="main-card" style="margin-top: 40px;">
+      <h1>🚌 Your Bus Routes</h1>
+      <div id="route-info" style="margin: 20px 0; padding: 15px; background: #f3faf7; border-radius: 10px;">
+        <p><strong>From:</strong> <span id="from-location"></span></p>
+        <p><strong>To:</strong> <span id="to-location"></span></p>
+      </div>
+      
+      <h2>Recommended Routes</h2>
+      
+      <div style="margin-top: 20px;">
+        <div class="route-card" style="border-left: 4px solid #43866B;">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <h3>🚌 Route 1: Direct Route</h3>
+              <p><strong>Bus 45</strong> → <strong>Bus 12</strong></p>
+              <p>📍 Board at: Main Street (2 min walk)</p>
+              <p>📍 Transfer at: City Center</p>
+              <p>📍 Arrive at: Your Destination (3 min walk)</p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 24px; color: #43866B; font-weight: bold;">28 min</div>
+              <div style="font-size: 14px; color: #666;">Fastest</div>
+            </div>
+          </div>
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #d6e2dc;">
+            <p><strong>Next bus:</strong> 5 minutes | <strong>Fare:</strong> $2.50</p>
+          </div>
+        </div>
+        
+        <div class="route-card">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <h3>🚌 Route 2: Scenic Route</h3>
+              <p><strong>Bus 23</strong> → <strong>Bus 67</strong></p>
+              <p>📍 Board at: Park Avenue (5 min walk)</p>
+              <p>📍 Transfer at: Market Square</p>
+              <p>📍 Arrive at: Your Destination (1 min walk)</p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 24px; color: #666; font-weight: bold;">35 min</div>
+              <div style="font-size: 14px; color: #666;">Fewer stops</div>
+            </div>
+          </div>
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #d6e2dc;">
+            <p><strong>Next bus:</strong> 12 minutes | <strong>Fare:</strong> $2.50</p>
+          </div>
+        </div>
+        
+        <div class="route-card">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <h3>🚌 Route 3: Express Route</h3>
+              <p><strong>Bus 89 Express</strong></p>
+              <p>📍 Board at: Central Terminal (8 min walk)</p>
+              <p>📍 Direct - No transfers!</p>
+              <p>📍 Arrive at: Your Destination</p>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 24px; color: #666; font-weight: bold;">32 min</div>
+              <div style="font-size: 14px; color: #666;">No transfers</div>
+            </div>
+          </div>
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #d6e2dc;">
+            <p><strong>Next bus:</strong> 18 minutes | <strong>Fare:</strong> $3.50 (Express)</p>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 30px; text-align: center;">
+        <button class="search-btn" onclick="window.location.href='index.html'">Search Again</button>
+      </div>
+    </section>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // Parse URL parameters and display route info
+    const params = new URLSearchParams(window.location.search);
+    const fromLocation = params.get('from') || 'Unknown';
+    const toLocation = params.get('to') || 'Unknown';
+    
+    document.getElementById('from-location').textContent = fromLocation;
+    document.getElementById('to-location').textContent = toLocation;
+  </script>
+</body>
+</html>

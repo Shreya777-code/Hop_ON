@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bus Routes - City Bus Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"
+                  fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a></li>
+        <li><a href="nearby-stops.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z"
+                  fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Nearby Bus Stops
+        </a></li>
+        <li><a href="bus-routes.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 9h18M7 17v2M17 17v2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Bus Routes
+        </a></li>
+        <li><a href="tourist-places.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Tourist Places Near Me
+        </a></li>
+        <li><a href="help.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3V14 M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Help
+        </a></li>
+      </ul>
+    </nav>
+
+    <section class="main-card" style="margin-top: 40px;">
+      <h1>All Bus Routes</h1>
+      <p>Browse all available bus routes in the city</p>
+      
+      <div style="margin-top: 30px;">
+        <div class="route-card">
+          <h3>🚌 Route 12 - Downtown Express</h3>
+          <p><strong>From:</strong> North Terminal → <strong>To:</strong> South Station</p>
+          <p>Stops: City Center, Market Square, University, Hospital</p>
+          <p>Frequency: Every 15 minutes</p>
+        </div>
+        
+        <div class="route-card">
+          <h3>🚌 Route 45 - East-West Line</h3>
+          <p><strong>From:</strong> East Garden → <strong>To:</strong> West Harbor</p>
+          <p>Stops: Shopping Mall, Old Town, Museum, Park Avenue</p>
+          <p>Frequency: Every 20 minutes</p>
+        </div>
+        
+        <div class="route-card">
+          <h3>🚌 Route 67 - Airport Shuttle</h3>
+          <p><strong>From:</strong> Central Station → <strong>To:</strong> Airport</p>
+          <p>Stops: Hotel District, Convention Center, Terminal 1, Terminal 2</p>
+          <p>Frequency: Every 30 minutes</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

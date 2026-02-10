@@ -1,0 +1,386 @@
+/* RESET & BASE */
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f3f8f6;
+}
+
+/* PAGE WRAPPER */
+.page-wrapper {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* =========================
+   NAVIGATION BAR
+========================= */
+.top-nav {
+  background: linear-gradient(180deg, #2b3f4f, #1f2f3b);
+  padding: 20px 0;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #e8eef3;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 8px 6px;
+}
+
+.nav-link svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  flex-shrink: 0;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+.hero {
+  position: relative;
+  height: 360px;
+  background: url("hero.png") center / cover no-repeat;
+  width: 100%;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  color: white;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero h1 {
+  font-size: 40px;
+  margin: 0 0 10px;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 600px;
+}
+
+/* =========================
+   PRIMARY ACTION BUTTON (OVERLAPPING)
+========================= */
+.primary-action {
+  position: absolute;
+  left: 50%;
+  bottom: -50px;
+  transform: translateX(-50%);
+  z-index: 10;
+  
+  width: 90%;
+  max-width: 600px;
+  background: #43866B;
+  color: whitesmoke;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.primary-action:hover {
+  background: #3a775f;
+}
+
+.primary-action:focus {
+  outline: 3px solid #4caf7d;
+}
+
+.primary-action h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.primary-action p {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+/* ICON CIRCLE */
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  background: #4caf7d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* =========================
+   MAIN CARD
+========================= */
+.main-card {
+  background: #ffffff;
+  margin-top: 90px;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* TWO COLUMN GRID */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.left-column {
+  width: 100%;
+  height: 100%;
+}
+
+.right-column {
+  width: 100%;
+  height: 100%;
+}
+
+/* MAP CONTAINER */
+.map-container {
+  background: #f8f9fa;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  height: 100%;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* RESPONSIVE: Stack on smaller screens */
+@media (max-width: 968px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .map-container {
+    min-height: 300px;
+  }
+}
+
+/* =========================
+   ROUTE SEARCH CARD
+========================= */
+.route-card {
+  background: #f3faf7;
+  border-radius: 20px;
+  padding: 28px;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.route-title {
+  font-size: 22px;
+  margin-bottom: 18px;
+  color: #222;
+}
+
+.route-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  border-radius: 14px;
+  border: 1px solid #d6e2dc;
+  background: white;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #5aa9a1;
+}
+
+/* SEARCH BUTTON */
+.search-btn {
+  margin-top: 14px;
+  padding: 16px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+  background: #2C3D4D;
+  color: white;
+  cursor: pointer;
+}
+
+/* =========================
+   TRUST STRIP
+========================= */
+.trust-strip {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 14px;
+  color: #555;
+}
+
+/* =========================
+   BUS STOP CARDS
+========================= */
+.bus-stop-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  border-left: 4px solid #43866B;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bus-stop-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.bus-stop-card h3 {
+  margin: 0 0 10px 0;
+  color: #222;
+  font-size: 18px;
+}
+
+.bus-stop-card p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* =========================
+   AUTOCOMPLETE SUGGESTIONS
+========================= */
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #d6e2dc;
+  border-radius: 14px;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 15px;
+}
+
+.suggestion-item:hover {
+  background: #f3faf7;
+}
+
+.suggestion-item:first-child {
+  border-radius: 14px 14px 0 0;
+}
+
+.suggestion-item:last-child {
+  border-radius: 0 0 14px 14px;
+}
+
+/* =========================
+   SWAP BUTTON (Optional)
+========================= */
+.swap-btn {
+  background: #e8f5f1;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  align-self: center;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+  color: #43866B;
+}
+
+.swap-btn:hover {
+  background: #43866B;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* =========================
+   INTERACTIVE ENHANCEMENTS
+========================= */
+.search-btn:hover {
+  background: #1f2d3a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.search-btn:active {
+  transform: translateY(0);
+}
+
+.search-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.map-container {
+  transition: transform 0.3s ease;
+}
+
+.input-group {
+  position: relative;
+}
