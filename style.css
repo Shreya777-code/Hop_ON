@@ -25,7 +25,11 @@ body {
 .top-nav {
   background: linear-gradient(180deg, #2b3f4f, #1f2f3b);
   padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
+
 
 .nav-list {
   list-style: none;
