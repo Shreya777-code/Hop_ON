@@ -200,6 +200,31 @@ body {
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+.map-overlay {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(198, 18, 18, 0.6);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+  pointer-events: none; /* so clicks pass through to the container */
+  transition: background 0.2s ease;
+}
+
+.map-container:hover .map-overlay {
+  background: rgba(76, 175, 125, 0.85);
 }
 
 .map-image {

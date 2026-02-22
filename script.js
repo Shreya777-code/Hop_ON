@@ -1,4 +1,23 @@
 // Wait for DOM to load
+// GLOBAL - accessible from HTML onclick
+function openMap() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+        window.open(url, "_blank");
+      },
+      function(error) {
+        alert("Please allow location access to open Google Maps.");
+      }
+    );
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   
   // ===================================
@@ -233,12 +252,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const mapContainer = document.querySelector('.map-container');
   const mapImage = document.querySelector('.map-image');
 
+  
+
   if (mapContainer && mapImage) {
     // Add click handler to map
-    mapContainer.addEventListener('click', function() {
-      // Open full-screen map view
-      window.location.href = 'map-view.html';
-    });
+    // mapContainer.addEventListener('click', function() {
+    //   // Open full-screen map view
+    //   window.location.href = 'map-view.html';
+    // });
 
     // Add hover effect
     mapContainer.style.cursor = 'pointer';
@@ -251,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.style.transform = 'scale(1)';
     });
   }
+  
   
 
   // ===================================
