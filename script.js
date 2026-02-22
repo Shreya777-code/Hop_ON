@@ -251,21 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.style.transform = 'scale(1)';
     });
   }
-  function openMap() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
-      window.open(url, '_blank');
-    }, function() {
-      alert("Location permission denied.");
-    });
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
+  
 
   // ===================================
   // SMOOTH SCROLL FOR ANCHOR LINKS
