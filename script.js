@@ -256,8 +256,11 @@ document.addEventListener('DOMContentLoaded', function() {
     navigator.geolocation.getCurrentPosition(function(position) {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
-      const url = `https://www.google.com/maps?q=${lat},${lon}`;
+
+      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
       window.open(url, '_blank');
+    }, function() {
+      alert("Location permission denied.");
     });
   } else {
     alert("Geolocation is not supported by this browser.");
