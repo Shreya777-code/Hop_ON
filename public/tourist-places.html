@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tourist Places - City Bus Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"
+                  fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a></li>
+        <li><a href="nearby-stops.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z"
+                  fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Nearby Bus Stops
+        </a></li>
+        <li><a href="bus-routes.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M3 9h18M7 17v2M17 17v2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Bus Routes
+        </a></li>
+        <li><a href="tourist-places.html" class="nav-link active" data-page="tourist-places">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Tourist Places Near Me
+        </a></li>
+        <li><a href="help.html" class="nav-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3V14 M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Help
+        </a></li>
+      </ul>
+    </nav>
+
+    <section class="main-card tourist-section" style="margin-top: 40px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+      
+      <!-- Page Header -->
+      <div class="tourist-header">
+        <div class="header-icon">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="#43866B">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="page-title" style="margin: 0;">Tourist Places Near You</h1>
+          <p class="tourist-subtitle">Showing popular places near your location</p>
+        </div>
+      </div>
+
+      <!-- Info Banner -->
+      <div class="tourist-info-banner">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#43866B" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        <div>
+          <strong>Showing popular places near your location</strong>
+          <p>All places are reachable by public bus</p>
+        </div>
+      </div>
+      
+      <!-- Tourist Places Grid -->
+      <div class="tourist-grid">
+
+        <!-- 1: Kapaleeshwarar Temple -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="Kapaleeshwarar_Temple.jpg" alt="Kapaleeshwarar Temple" onerror="this.style.background='#e6f4ef';this.alt='';this.style.height='200px'">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Kapaleeshwarar Temple</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">5B</span>
+                <span class="bus-badge">21D</span>
+                <span class="bus-badge">23C</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Mylapore (BesantNagar / Adayar)</p>
+              <p class="tourist-hours">Open: 5 AM – 12 PM, 4 PM – 9 PM | Free entry</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Kapaleeshwarar Temple', ['5B','21D','23C'], 'Mylapore')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- 2: Marina Beach -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="marina_beach.jpg" alt="Marina Beach" onerror="this.style.background='#e6f4ef';this.alt='';this.style.height='200px'">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Marina Beach</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">5C</span>
+                <span class="bus-badge">21L</span>
+                <span class="bus-badge">A51</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Lattice Bridge / Besant Nagar</p>
+              <p class="tourist-hours">Open 24 hours | Free entry | World's longest urban beach</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Marina Beach', ['5C','21L','A51'], 'Besant Nagar')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- 3: Fort St George -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="fort.jpg" alt="Fort St George" onerror="this.style.background='#e6f4ef';this.alt='';this.style.height='200px'">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Fort St. George</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">5C</span>
+                <span class="bus-badge">7B</span>
+                <span class="bus-badge">21D</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Broadway / High Court</p>
+              <p class="tourist-hours">Open: 9 AM – 5 PM | Entry: ₹15 | Built in 1644</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Fort St. George', ['5C','7B','21D'], 'Broadway')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- 4: Government Museum -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="city_museum.png" alt="Government Museum Chennai">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Government Museum</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">5B</span>
+                <span class="bus-badge">21L</span>
+                <span class="bus-badge">A51</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Egmore / Poonamallee High Rd</p>
+              <p class="tourist-hours">Open: 9:30 AM – 5 PM | Entry: ₹15 | Closed Fridays</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Government Museum', ['5B','21L','A51'], 'Egmore')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- 5: Santhome Basilica -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="santhome.avif" alt="Santhome Basilica" onerror="this.style.background='#e6f4ef';this.alt='';this.style.height='200px'">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Santhome Basilica</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">19B</span>
+                <span class="bus-badge">21D</span>
+                <span class="bus-badge">23C</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> Mandaveli / Santhome</p>
+              <p class="tourist-hours">Open: 6 AM – 8 PM | Free entry | UNESCO heritage site</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Santhome Basilica', ['19B','21D','23C'], 'Mandaveli')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+        <!-- 6: Valluvar Kottam -->
+        <div class="tourist-card">
+          <div class="tourist-image">
+            <img src="old_town_square.png" alt="Valluvar Kottam">
+            <div class="image-overlay"></div>
+          </div>
+          <div class="tourist-content">
+            <h3>Valluvar Kottam</h3>
+            <div class="tourist-meta">
+              <div class="bus-badges">
+                <span class="bus-badge">5E</span>
+                <span class="bus-badge">23C</span>
+                <span class="bus-badge">7B</span>
+              </div>
+            </div>
+            <div class="tourist-details">
+              <p class="nearest-stop"><strong>Nearest stop:</strong> T.Nagar / Nungambakkam</p>
+              <p class="tourist-hours">Open: 8 AM – 8 PM | Free entry | Stone chariot monument</p>
+            </div>
+            <button class="tourist-btn" onclick="showBusDirections('Valluvar Kottam', ['5E','23C','7B'], 'T.Nagar')">
+              See How to Go by Bus
+            </button>
+            <p class="uses-public-bus">Uses public buses only</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+  
+  <!-- Modal for Bus Directions -->
+  <div id="directionsModal" class="directions-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeDirectionsModal()">×</button>
+      <div class="modal-header">
+        <h2 id="modalPlaceName">City Museum</h2>
+        <p class="modal-subtitle">How to reach by public bus</p>
+      </div>
+      
+      <div class="modal-body">
+        <p style="margin-bottom: 10px;"><strong>Available Bus Routes:</strong></p>
+        <div class="modal-buses" id="modalBusList">
+          <!-- Bus badges will be inserted here -->
+        </div>
+        
+        <div class="modal-info">
+          <p><strong>📍 Nearest Bus Stop:</strong> <span id="modalNearestStop">Museum District</span></p>
+          <p><strong>⏱️ Frequency:</strong> Buses every 15-20 minutes</p>
+          <p><strong>💵 Fare:</strong> $2.50 single ride</p>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="modal-btn modal-btn-primary" onclick="planRoute()">Plan My Route</button>
+          <button class="modal-btn modal-btn-secondary" onclick="closeDirectionsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+  <script>
+    // Modal functionality for tourist places
+    function showBusDirections(placeName, busNumbers, nearestStop) {
+      const modal = document.getElementById('directionsModal');
+      const modalPlaceName = document.getElementById('modalPlaceName');
+      const modalBusList = document.getElementById('modalBusList');
+      const modalNearestStop = document.getElementById('modalNearestStop');
+      
+      // Update modal content
+      modalPlaceName.textContent = placeName;
+      modalNearestStop.textContent = nearestStop;
+      
+      // Clear and populate bus badges
+      modalBusList.innerHTML = '';
+      busNumbers.forEach(num => {
+        const badge = document.createElement('div');
+        badge.className = 'modal-bus-badge';
+        badge.textContent = num;
+        modalBusList.appendChild(badge);
+      });
+      
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeDirectionsModal() {
+      const modal = document.getElementById('directionsModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    function planRoute() {
+      const placeName = document.getElementById('modalPlaceName').textContent;
+      closeDirectionsModal();
+      
+      // Show loading message
+      const loading = document.createElement('div');
+      loading.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px 50px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 2000; text-align: center;';
+      loading.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 10px;">🚌</div>
+        <div style="font-size: 16px; font-weight: 600; color: #1a202c;">Planning your route...</div>
+        <div style="font-size: 14px; color: #718096; margin-top: 5px;">To ${placeName}</div>
+      `;
+      document.body.appendChild(loading);
+      
+      setTimeout(() => {
+        window.location.href = `index.html?destination=${encodeURIComponent(placeName)}`;
+      }, 1500);
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('directionsModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeDirectionsModal();
+      }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeDirectionsModal();
+      }
+    });
+    
+    // Animate cards on page load
+    window.addEventListener('load', function() {
+      const cards = document.querySelectorAll('.tourist-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    });
+  </script>
+</body>
+</html>

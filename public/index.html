@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>City Bus Finder</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Autocomplete dropdown ── */
+    .input-wrapper {
+      position: relative;
+    }
+    .suggestions-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: white;
+      border: 1.5px solid #5aa9a1;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      z-index: 999;
+      max-height: 260px;
+      overflow-y: auto;
+      display: none;
+    }
+    .suggestions-dropdown.open { display: block; }
+
+    .suggestion-group-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #a0aec0;
+      padding: 10px 16px 4px;
+    }
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      font-size: 15px;
+      color: #2d3748;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .suggestion-item:hover,
+    .suggestion-item.highlighted {
+      background: #f0f9f5;
+    }
+    .suggestion-item .sug-icon {
+      width: 28px; height: 28px;
+      background: #e8f5f1;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .suggestion-item .sug-icon.nearby { background: #5aa9a120; }
+    .suggestion-item .sug-meta {
+      font-size: 12px;
+      color: #a0aec0;
+      margin-top: 1px;
+    }
+    .suggestion-empty {
+      padding: 18px 16px;
+      text-align: center;
+      color: #a0aec0;
+      font-size: 14px;
+    }
+
+    /* ── Nearby stops badge on input ── */
+    .input-addon {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; gap: 6px;
+    }
+    .nearby-btn-inline {
+      font-size: 12px;
+      font-weight: 600;
+      color: #43866B;
+      background: #e8f5f1;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .nearby-btn-inline:hover { background: #d0ece3; }
+
+    .input-group input.has-addon { padding-right: 100px; }
+
+    /* ── Search result flash ── */
+    .search-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    /* ── Route card tweak for spacing ── */
+    .route-card { margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <nav class="top-nav">
+      <ul class="nav-list">
+        <li>
+          <a href="index.html" class="nav-link active">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Home
+          </a>
+        </li>
+        <li>
+          <a href="nearby-stops.html" class="nav-link">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s7-7.75 7-13a7 7 0 0 0-14 0c0 5.25 7 13 7 13z"
+                    fill="none" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Nearby Bus Stops
+          </a>
+        </li>
+        <li>
+          <a href="bus-routes.html" class="nav-link">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M3 9h18M7 17v2M17 17v2" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Bus Routes
+          </a>
+        </li>
+        <li>
+          <a href="tourist-places.html" class="nav-link">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Tourist Places Near Me
+          </a>
+        </li>
+        <li>
+          <a href="help.html" class="nav-link">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3V14 M12 17h.01"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Help
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-overlay">
+        <h1>Find the Right Bus.<br>Right Now.</h1>
+        <p>See nearby bus stops, bus numbers and routes easily.</p>
+      </div>
+
+      <button class="primary-action" id="nearbyBtn">
+        <div class="icon-circle">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="white"/>
+            <circle cx="12" cy="9" r="2.5" fill="#4caf7d"/>
+          </svg>
+        </div>
+        <div class="action-text">
+          <h2>Bus Stops Near Me</h2>
+          <p>Shows bus stops around your location</p>
+        </div>
+      </button>
+    </section>
+
+    <!-- MAIN CONTENT CARD -->
+    <section class="main-card">
+      <div class="content-grid">
+
+        <!-- LEFT COLUMN: FORM -->
+        <div class="left-column">
+          <div class="route-card">
+            <h3 class="route-title">Where are you going?</h3>
+
+            <div class="route-fields">
+
+              <!-- START INPUT -->
+              <div class="input-group" id="startGroup">
+                <label for="start">Start</label>
+                <div class="input-wrapper">
+                  <input id="start" type="text" placeholder="My Location" class="has-addon" autocomplete="off">
+                  <div class="input-addon">
+                    <button class="nearby-btn-inline" id="useLocationBtn" title="Use my current location">
+                      📍 Near Me
+                    </button>
+                  </div>
+                  <div class="suggestions-dropdown" id="startDropdown"></div>
+                </div>
+              </div>
+
+              <!-- END INPUT -->
+              <div class="input-group" id="endGroup">
+                <label for="end">End</label>
+                <div class="input-wrapper">
+                  <input id="end" type="text" placeholder="Type any stop name…" autocomplete="off">
+                  <div class="suggestions-dropdown" id="endDropdown"></div>
+                </div>
+              </div>
+
+              <button class="search-btn" id="searchBtn">Show Buses</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: MAP -->
+        <div class="right-column">
+          <div class="map-container">
+            <img src="map.png" alt="Bus route map" class="map-image">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000';
+
+    // ── All 944 unique stops embedded from stopdata.csv ───────────────────
+    const ALL_STOPS = [{"id": "274", "name": "2NdWaterTankOnSecond", "lat": 13.09896, "lng": 80.13239}, {"id": "21", "name": "A.G.SOfficeColony", "lat": 12.98298, "lng": 80.21022}, {"id": "3", "name": "A.M.S.Hospital", "lat": 13.01647, "lng": 80.25963}, {"id": "31", "name": "A.V.Construction", "lat": 12.96475, "lng": 80.2117}, {"id": "9999", "name": "Aaaalayam", "lat": 971.11111, "lng": 89.0}, {"id": "3335", "name": "Aalamaram", "lat": 13.0255, "lng": 80.11327}, {"id": "4019", "name": "AAVIN", "lat": 12.89352, "lng": 80.22764}, {"id": "360", "name": "AayurvedaAshramam", "lat": 13.18212, "lng": 80.1929}, {"id": "4017", "name": "ACCENTURE", "lat": 12.906031, "lng": 80.228347}, {"id": "3720", "name": "ACP", "lat": 13.141958, "lng": 80.223529}, {"id": "761", "name": "AdambakkamP.S", "lat": 12.98942, "lng": 80.20204}, {"id": "3203", "name": "Adayar Bus Depot", "lat": 12.998459, "lng": 80.256085}, {"id": "3436", "name": "Adayar Bus Stand", "lat": 13.001756, "lng": 80.256561}, {"id": "3599", "name": "Adayar Gate", "lat": 13.028948, "lng": 80.249139}, {"id": "3429", "name": "Adayar Signal", "lat": 13.006689, "lng": 80.25382}, {"id": "53", "name": "AdayarDepot", "lat": 12.99832, "lng": 80.25612}, {"id": "214", "name": "AdayarO.T.", "lat": 13.00644, "lng": 80.25751}, {"id": "4069", "name": "Adayar_Gate/Park_Sheraton", "lat": 13.028948, "lng": 80.249139}, {"id": "3185", "name": "Adyar Bus Depot", "lat": 12.996908, "lng": 80.256731}, {"id": "3365", "name": "Adyar Bus Stand", "lat": 13.00667, "lng": 80.2555}, {"id": "3280", "name": "Adyar Depot", "lat": 12.997539, "lng": 80.256778}, {"id": "3136", "name": "Adyar Malar Hospital", "lat": 13.008488, "lng": 80.258931}, {"id": "3566", "name": "Adyar Signal", "lat": 13.00648, "lng": 80.25394}, {"id": "3618", "name": "Adyar Signal/Adyar Aavin/Malar Hospital", "lat": 13.007483, "lng": 80.258342}, {"id": "3437", "name": "Adyar Signal/Malar Hospital", "lat": 13.007145, "lng": 80.258841}, {"id": "3629", "name": "Adyar Telephone Exchange Bus Stop", "lat": 13.000581, "lng": 80.256484}, {"id": "649", "name": "ADYAR_GATE", "lat": 13.02927, "lng": 80.24775}, {"id": "4091", "name": "Adyar_Gate/Park_Sheraton", "lat": 13.029097, "lng": 80.249161}, {"id": "2005", "name": "AGS", "lat": 12.849816, "lng": 80.226491}, {"id": "3130", "name": "Ajantha", "lat": 13.037271, "lng": 80.195971}, {"id": "3755", "name": "Ajex", "lat": 13.17299, "lng": 80.30428}, {"id": "343", "name": "Alamadhi", "lat": 13.20602, "lng": 80.1166}, {"id": "342", "name": "AlamadhiOld", "lat": 13.20101, "lng": 80.14389}, {"id": "3155", "name": "Albert Theatre", "lat": 13.076343, "lng": 80.264107}, {"id": "3463", "name": "All India Radio Bus Stop/Light House", "lat": 13.039021, "lng": 80.278671}, {"id": "3565", "name": "All_India_Radio_Bus_Stop", "lat": 13.0391, "lng": 80.27894}, {"id": "681", "name": "AlwarThirunagar", "lat": 13.03989, "lng": 80.18603}, {"id": "824", "name": "AmarambeduChatram", "lat": 12.96826, "lng": 80.02351}, {"id": "869", "name": "AmarambeduRoad", "lat": 12.94952, "lng": 80.03669}, {"id": "870", "name": "AmarambeduVillage", "lat": 12.95831, "lng": 80.02017}, {"id": "3239", "name": "Ambal Nagar/Ekkaduthangal", "lat": 13.019151, "lng": 80.20638}, {"id": "288", "name": "Ambathur", "lat": 13.12165, "lng": 80.14861}, {"id": "313", "name": "AmbathurEstate", "lat": 13.09971, "lng": 80.1699}, {"id": "3404", "name": "Ambattur Estate", "lat": 13.099641, "lng": 80.169996}, {"id": "3169", "name": "Ambedkar College", "lat": 13.118267, "lng": 80.259182}, {"id": "291", "name": "AmbOt", "lat": 13.11969, "lng": 80.15003}, {"id": "554", "name": "Aminijikarai", "lat": 13.07398, "lng": 80.22472}, {"id": "3132", "name": "Amman Koil/Ayyapan Koil", "lat": 13.04148, "lng": 80.196607}, {"id": "167", "name": "AmmanKulam", "lat": 13.20636, "lng": 80.25006}, {"id": "3218", "name": "AMS Hospital/Satya Studio/Janaki College", "lat": 13.016078, "lng": 80.259762}, {"id": "3103", "name": "Amutham", "lat": 13.039797, "lng": 80.193195}, {"id": "826", "name": "Anakaputhur", "lat": 12.98348, "lng": 80.12655}, {"id": "3540", "name": "Anand/Sathyam Theatre", "lat": 13.056438, "lng": 80.257151}, {"id": "363", "name": "Andakuppam", "lat": 13.19197, "lng": 80.26953}, {"id": "82", "name": "Andersonpet", "lat": 13.07814, "lng": 80.0251}, {"id": "685", "name": "AngalammanKoil", "lat": 13.03182, "lng": 80.18337}, {"id": "633", "name": "AnjugamSchool", "lat": 13.04198, "lng": 80.22543}, {"id": "3133", "name": "Anna Square/Madras University", "lat": 13.065934, "lng": 80.284035}, {"id": "3426", "name": "Anna University", "lat": 13.008041, "lng": 80.23342}, {"id": "3294", "name": "Anna University/Gandhi Mandabam", "lat": 13.008251, "lng": 80.2334}, {"id": "98", "name": "AnnaNagarCircle", "lat": 13.08466, "lng": 80.21779}, {"id": "495", "name": "AnnaNagarWest", "lat": 13.09712, "lng": 80.19839}, {"id": "92", "name": "AnnaPoornaHotel/DamsRd", "lat": 13.06844, "lng": 80.26963}, {"id": "524", "name": "AnnaSquare", "lat": 13.06426, "lng": 80.28337}, {"id": "4002", "name": "ANNA_UNIVERSITY", "lat": 13.008192, "lng": 80.233775}, {"id": "4087", "name": "Anna_University/Gandhi_Mandabam", "lat": 13.008251, "lng": 80.2334}, {"id": "340", "name": "Arikambedu", "lat": 13.16273, "lng": 80.12999}, {"id": "256", "name": "Ariyalur", "lat": 13.19098, "lng": 80.25152}, {"id": "239", "name": "ArumandaiRd.Jn.", "lat": 13.22833, "lng": 80.21779}, {"id": "96", "name": "Arumbakkam", "lat": 13.07638, "lng": 80.20273}, {"id": "3151", "name": "Asarkana/Kathipara/Guindy Circle", "lat": 13.003671, "lng": 80.201072}, {"id": "4075", "name": "Asarkana/Kathipara/Guindy_Circle", "lat": 13.003671, "lng": 80.201072}, {"id": "3460", "name": "Ashok Pillar/Udhayam Theater", "lat": 13.034111, "lng": 80.21214}, {"id": "157", "name": "AshokLayland", "lat": 13.20797, "lng": 80.31609}, {"id": "119", "name": "AthipetI.C.F.Colony", "lat": 13.09302, "lng": 80.14621}, {"id": "328", "name": "AthipetJn", "lat": 13.08901, "lng": 80.16174}, {"id": "907", "name": "Athur", "lat": 13.25064, "lng": 80.14166}, {"id": "277", "name": "AvadiCircle", "lat": 13.11977, "lng": 80.10269}, {"id": "272", "name": "AvadiMosque", "lat": 13.11576, "lng": 80.10484}, {"id": "3620", "name": "Avvai Home", "lat": 13.007463, "lng": 80.261472}, {"id": "3469", "name": "Avvai House", "lat": 13.007407, "lng": 80.261635}, {"id": "216", "name": "AvvaiHome", "lat": 13.0074, "lng": 80.25976}, {"id": "121", "name": "Ayanambakkam", "lat": 13.07304, "lng": 80.1529}, {"id": "3537", "name": "Ayanavaram ESI", "lat": 13.097412, "lng": 80.242783}, {"id": "3106", "name": "Aynavaram Depot", "lat": 13.09844, "lng": 80.242292}, {"id": "3193", "name": "Aynavaram ESI", "lat": 13.097333, "lng": 80.242389}, {"id": "319", "name": "AyyappaNagar", "lat": 13.09779, "lng": 80.14054}, {"id": "797", "name": "AyyappanThangal", "lat": 13.03901, "lng": 80.13376}, {"id": "3125", "name": "Baby Hospital", "lat": 13.075473, "lng": 80.258785}, {"id": "3384", "name": "Baby Nagar", "lat": 12.980545, "lng": 80.229067}, {"id": "3382", "name": "Baby Nagar/Balaji Nagar", "lat": 12.981672, "lng": 80.230423}, {"id": "3251", "name": "Balaiya Garden", "lat": 12.965411, "lng": 80.201139}, {"id": "3374", "name": "Balaji Dental Hospital", "lat": 12.944388, "lng": 80.208467}, {"id": "3373", "name": "Balaji Nagar", "lat": 12.953997, "lng": 80.212267}, {"id": "3769", "name": "Beach station", "lat": 13.10012, "lng": 80.0}, {"id": "3438", "name": "Besant Nagar", "lat": 13.000314, "lng": 80.265709}, {"id": "3667", "name": "Besant Nagar Depot", "lat": 13.001126, "lng": 80.26729}, {"id": "52", "name": "BesantNagar", "lat": 13.00033, "lng": 80.26676}, {"id": "3730", "name": "Bhakthavatchalam College", "lat": 13.108078, "lng": 80.183645}, {"id": "850", "name": "BharathaMathaSt", "lat": 12.92819, "lng": 80.12698}, {"id": "19", "name": "BharathElectronics", "lat": 13.01645, "lng": 80.19002}, {"id": "3296", "name": "Bharathi Nagar", "lat": 12.98165, "lng": 80.233502}, {"id": "3499", "name": "Bharathi Nagar/MKB Nagar", "lat": 13.122922, "lng": 80.259661}, {"id": "621", "name": "BharathiNagar(PeriyarPa", "lat": 13.05419, "lng": 80.22886}, {"id": "3572", "name": "BHEL Nagar", "lat": 12.924795, "lng": 80.182698}, {"id": "3230", "name": "Bhuvaneswari", "lat": 13.09042, "lng": 80.258598}, {"id": "3237", "name": "Bhuvaneswari/Vasanthi", "lat": 13.090623, "lng": 80.258745}, {"id": "3604", "name": "Britto School", "lat": 12.99371, "lng": 80.21008}, {"id": "475", "name": "BROADWAY", "lat": 13.08842, "lng": 80.28148}, {"id": "3411", "name": "Broadway Terminus", "lat": 13.088298, "lng": 80.283604}, {"id": "347", "name": "Budur", "lat": 13.23878, "lng": 80.19479}, {"id": "469", "name": "BusBay-17ThKm", "lat": 13.14401, "lng": 80.22097}, {"id": "3112", "name": "Butt Road", "lat": 13.008635, "lng": 80.197825}, {"id": "3140", "name": "Butt Road Kalyana Mandapam", "lat": 13.010992, "lng": 80.195515}, {"id": "753", "name": "ButtRoad", "lat": 13.00757, "lng": 80.19608}, {"id": "3293", "name": "C.I.T Nagar", "lat": 13.030023, "lng": 80.230828}, {"id": "201", "name": "C.I.T._COLONY", "lat": 13.04153, "lng": 80.25868}, {"id": "641", "name": "C.M.B.T.", "lat": 13.06932, "lng": 80.20583}, {"id": "3257", "name": "Camp Road", "lat": 12.922392, "lng": 80.141458}, {"id": "2003", "name": "CAUVERY", "lat": 12.986577, "lng": 80.233278}, {"id": "3333", "name": "Cement Road", "lat": 13.02531, "lng": 80.11472}, {"id": "0", "name": "CEMENTRY(MANDAVELI)", "lat": 13.0299, "lng": 80.26191}, {"id": "480", "name": "CENTRAL", "lat": 13.08186, "lng": 80.27628}, {"id": "3271", "name": "Central Jail/Puzhal Camp", "lat": 13.158144, "lng": 80.203702}, {"id": "3701", "name": "Central/Moore Market", "lat": 13.082137, "lng": 80.275592}, {"id": "3219", "name": "Check Post", "lat": 12.9975, "lng": 80.216574}, {"id": "3391", "name": "Chellammal College/SPIC", "lat": 13.011673, "lng": 80.219807}, {"id": "3439", "name": "Chemman Cheri", "lat": 12.861155, "lng": 80.227188}, {"id": "3440", "name": "Chemmanchery S.C.B.", "lat": 12.874689, "lng": 80.209732}, {"id": "63", "name": "ChemmancheryS.C.B.", "lat": 12.8759, "lng": 80.20826}, {"id": "4130", "name": "Chengalpattu_Bypass", "lat": 12.699907, "lng": 79.968312}, {"id": "3512", "name": "Chengammal/PSB College", "lat": 12.770775, "lng": 80.213192}, {"id": "3412", "name": "Chennai Central/Government Hospital", "lat": 13.081813, "lng": 80.276867}, {"id": "582", "name": "Chepauk", "lat": 13.05757, "lng": 80.28191}, {"id": "3367", "name": "Chepauk/Ezhilagam", "lat": 13.06264, "lng": 80.28314}, {"id": "3608", "name": "Chetti Theru", "lat": 13.04139, "lng": 80.1145}, {"id": "358", "name": "Chettimedu", "lat": 13.18563, "lng": 80.222}, {"id": "3163", "name": "Chettinad Hospital", "lat": 12.796304, "lng": 80.222929}, {"id": "770", "name": "ChidambaramStores", "lat": 12.98106, "lng": 80.18809}, {"id": "3186", "name": "Chinnamalai/Little Mount/Saidapet Court", "lat": 13.01538, "lng": 80.224976}, {"id": "67", "name": "Chitlapakkam", "lat": 12.88725, "lng": 80.18423}, {"id": "844", "name": "ChitlapakkamB.S", "lat": 12.93612, "lng": 80.14741}, {"id": "450", "name": "ChoolaiMill", "lat": 13.09412, "lng": 80.268}, {"id": "452", "name": "CHOOLAI_P.O.", "lat": 13.09235, "lng": 80.2692}, {"id": "3258", "name": "Christ King/Convent", "lat": 12.922758, "lng": 80.130343}, {"id": "852", "name": "Chrompet", "lat": 12.95253, "lng": 80.13994}, {"id": "3278", "name": "Chrompet Depot", "lat": 12.951091, "lng": 80.139741}, {"id": "18", "name": "Cipet", "lat": 13.01384, "lng": 80.20436}, {"id": "3612", "name": "City Centre/Kalyani Hospital", "lat": 13.043722, "lng": 80.272391}, {"id": "3768", "name": "Clay battery", "lat": 13.10864, "lng": 80.0}, {"id": "471", "name": "CliveBattery", "lat": 13.10159, "lng": 80.29435}, {"id": "4003", "name": "CLRI", "lat": 13.006869, "lng": 80.240674}, {"id": "3627", "name": "CLRI/IIT Madras", "lat": 13.006883, "lng": 80.240639}, {"id": "3700", "name": "CLS Post Office", "lat": 13.083026, "lng": 80.278858}, {"id": "3149", "name": "CMBT", "lat": 13.06878, "lng": 80.20517}, {"id": "2006", "name": "Coffee Day", "lat": 12.86022, "lng": 80.2264}, {"id": "3200", "name": "Collector Nagar/MM Hospital", "lat": 13.087805, "lng": 80.189885}, {"id": "309", "name": "CollectorNagar", "lat": 13.08771, "lng": 80.19015}, {"id": "3159", "name": "Commissioner Office", "lat": 13.073685, "lng": 80.261715}, {"id": "743", "name": "CONCORDE", "lat": 13.01228, "lng": 80.22159}, {"id": "904", "name": "Convent", "lat": 12.92309, "lng": 80.12621}, {"id": "156", "name": "CoronationNagar", "lat": 13.13235, "lng": 80.27987}, {"id": "181", "name": "Corpn.PlayGround", "lat": 13.05203, "lng": 80.25787}, {"id": "40", "name": "CowlBazaar", "lat": 12.98871, "lng": 80.14213}, {"id": "3174", "name": "Cycle Shop", "lat": 13.153196, "lng": 80.208167}, {"id": "302", "name": "CycleShop", "lat": 13.15504, "lng": 80.20577}, {"id": "192", "name": "D.M.S", "lat": 13.04727, "lng": 80.24968}, {"id": "559", "name": "D.P.I", "lat": 13.06754, "lng": 80.25202}, {"id": "3482", "name": "dams Road", "lat": 13.066966, "lng": 80.268524}, {"id": "444", "name": "Dasamahan", "lat": 13.09804, "lng": 80.25118}, {"id": "540", "name": "Dasaprakash", "lat": 13.07889, "lng": 80.25032}, {"id": "642", "name": "Dasarathapuram", "lat": 13.05726, "lng": 80.20419}, {"id": "3190", "name": "Dashamakan", "lat": 13.097547, "lng": 80.254655}, {"id": "3648", "name": "Devanathan Street", "lat": 13.028149, "lng": 80.263691}, {"id": "3352", "name": "Dhandeeswaram", "lat": 12.983326, "lng": 80.22224}, {"id": "3144", "name": "Dinathanthi/Commisioner Office", "lat": 13.080424, "lng": 80.263082}, {"id": "3142", "name": "DLF/L&T", "lat": 13.023807, "lng": 80.17892}, {"id": "3104", "name": "DMS", "lat": 13.047059, "lng": 80.248352}, {"id": "3506", "name": "Dollar", "lat": 12.90607, "lng": 80.22831}, {"id": "174", "name": "Doveton", "lat": 13.08704, "lng": 80.25886}, {"id": "323", "name": "Dunlop", "lat": 13.10531, "lng": 80.15222}, {"id": "3576", "name": "Echankadu", "lat": 12.94686, "lng": 80.18401}, {"id": "354", "name": "Echankuzhi", "lat": 13.20322, "lng": 80.27006}, {"id": "4038", "name": "EGATTUR", "lat": 12.837108, "lng": 80.228172}, {"id": "529", "name": "Egmore", "lat": 13.07751, "lng": 80.26139}, {"id": "3157", "name": "Egmore Court/Commissioner Office", "lat": 13.07289, "lng": 80.261893}, {"id": "3108", "name": "Egmore Railway Station", "lat": 13.077801, "lng": 80.261976}, {"id": "486", "name": "EgmoreNorthR.S.", "lat": 13.07946, "lng": 80.25981}, {"id": "307", "name": "ElangoNagarOfficerColo", "lat": 13.09106, "lng": 80.185}, {"id": "3728", "name": "Electricity Board/Post Office", "lat": 13.105542, "lng": 80.186282}, {"id": "456", "name": "EllaiammanKoil", "lat": 13.15789, "lng": 80.30156}, {"id": "3759", "name": "Ellayamman koil", "lat": 13.15656, "lng": 80.30087}, {"id": "731", "name": "ENGG_COLLEGE", "lat": 13.00857, "lng": 80.23144}, {"id": "158", "name": "Ennore", "lat": 13.21805, "lng": 80.3201}, {"id": "3743", "name": "Ennore Foundary", "lat": 13.21201, "lng": 80.31865}, {"id": "3658", "name": "Erikarai", "lat": 12.987278, "lng": 80.218207}, {"id": "3748", "name": "Ernavur", "lat": 13.18628, "lng": 80.30757}, {"id": "3600", "name": "Errikarai", "lat": 12.98713, "lng": 80.2183}, {"id": "3530", "name": "Erukancherry", "lat": 13.12379, "lng": 80.24792}, {"id": "3497", "name": "Erukancherry Toll Gate", "lat": 13.122114, "lng": 80.251128}, {"id": "3722", "name": "Erukkancherry", "lat": 13.123971, "lng": 80.247888}, {"id": "3679", "name": "ESI", "lat": 13.093706, "lng": 80.241134}, {"id": "3102", "name": "ESI Hospital", "lat": 13.035214, "lng": 80.208738}, {"id": "3746", "name": "ETP camp 1", "lat": 13.19614, "lng": 80.3119}, {"id": "3747", "name": "ETP camp 2", "lat": 13.18831, "lng": 80.3085}, {"id": "425", "name": "EzhilNagar", "lat": 13.13333, "lng": 80.26275}, {"id": "198", "name": "F.C.IOld", "lat": 13.03791, "lng": 80.25668}, {"id": "2009", "name": "FISH_MARKET", "lat": 12.893227, "lng": 80.227376}, {"id": "632", "name": "FiveLamps", "lat": 13.0466, "lng": 80.22629}, {"id": "4140", "name": "Ford", "lat": 12.78709, "lng": 80.01505}, {"id": "915", "name": "ForeShoreEstate", "lat": 13.02421, "lng": 80.27384}, {"id": "409", "name": "G.K.M.Colony", "lat": 13.11024, "lng": 80.22277}, {"id": "2002", "name": "GAJENDRA_CIRCLE", "lat": 12.99188, "lng": 80.233718}, {"id": "3318", "name": "Gandhi Mandapam/Anna University", "lat": 13.007388, "lng": 80.236858}, {"id": "3687", "name": "Gandhi nagar", "lat": 13.0069, "lng": 80.25028}, {"id": "3385", "name": "Gandhi Nagar/Madhya Kailash", "lat": 13.006892, "lng": 80.249581}, {"id": "3356", "name": "Gandhi Road", "lat": 12.98655, "lng": 80.22292}, {"id": "3002", "name": "Gandhinagar_Cutservice stop Towards Adyar", "lat": 13.006802, "lng": 80.248402}, {"id": "4061", "name": "GANDHI_MANDABAM", "lat": 13.00741, "lng": 80.236843}, {"id": "4072", "name": "Gandhi_Mandapam/Anna University", "lat": 13.007388, "lng": 80.236858}, {"id": "3249", "name": "Ganesh Nagar", "lat": 12.960853, "lng": 80.187253}, {"id": "431", "name": "GaneshPuram", "lat": 13.10957, "lng": 80.2595}, {"id": "3329", "name": "Gangai Amman Koil", "lat": 13.03807, "lng": 80.1132}, {"id": "196", "name": "Gemini%20P.html", "lat": 13.05229, "lng": 80.25123}, {"id": "237", "name": "Gnayaru", "lat": 13.26125, "lng": 80.21419}, {"id": "3613", "name": "Golden Flats", "lat": 13.08828, "lng": 80.178894}, {"id": "3521", "name": "Golden Flats Bus Stop", "lat": 13.088254, "lng": 80.17844}, {"id": "311", "name": "GoldenFlat", "lat": 13.08901, "lng": 80.17084}, {"id": "3325", "name": "Gopala Krishna Theatre", "lat": 13.03387, "lng": 80.16034}, {"id": "699", "name": "Govardanagiri", "lat": 13.10038, "lng": 80.10836}, {"id": "3238", "name": "Government Hospital/Nurse Quarters", "lat": 13.082233, "lng": 80.279143}, {"id": "675", "name": "Govt.GirlsH.Sc", "lat": 13.03138, "lng": 80.216}, {"id": "3555", "name": "Gowrivakkam", "lat": 12.920951, "lng": 80.167331}, {"id": "892", "name": "Guduvanchery", "lat": 12.84185, "lng": 80.0578}, {"id": "3557", "name": "Guduvanchery Bus Terminus", "lat": 12.84548, "lng": 80.061448}, {"id": "3559", "name": "Guduvanchery Electricity Board", "lat": 12.851341, "lng": 80.065607}, {"id": "4151", "name": "Guduvanchery_EB", "lat": 12.851341, "lng": 80.065607}, {"id": "3113", "name": "Guindy", "lat": 13.00858, "lng": 80.202424}, {"id": "3592", "name": "Guindy Estate Bus Terminus", "lat": 13.009722, "lng": 80.211227}, {"id": "3580", "name": "Guindy Race Course/Guindy Railway Station Bus Stop", "lat": 13.008179, "lng": 80.213317}, {"id": "3308", "name": "Guindy Race Course/Railway Station Bus Stop", "lat": 13.007883, "lng": 80.213017}, {"id": "3114", "name": "Guindy Railway Station/Guindy Air Scotts", "lat": 13.009251, "lng": 80.210712}, {"id": "3674", "name": "Guindy Terminus", "lat": 13.009291, "lng": 80.211252}, {"id": "3442", "name": "Guindy TVK Estate", "lat": 13.009764, "lng": 80.211128}, {"id": "3139", "name": "Guindy/MKN Road", "lat": 13.007289, "lng": 80.209773}, {"id": "4074", "name": "Guindy/MKN_Road", "lat": 13.007289, "lng": 80.209773}, {"id": "747", "name": "GuindyR.S", "lat": 13.00713, "lng": 80.20891}, {"id": "4073", "name": "Guindy_RS_BusStop", "lat": 13.008179, "lng": 80.213317}, {"id": "4086", "name": "Guindy_Terminus", "lat": 13.009291, "lng": 80.211252}, {"id": "3479", "name": "Guru Nanak College", "lat": 12.99062, "lng": 80.220199}, {"id": "3443", "name": "Gurunanak College", "lat": 12.990388, "lng": 80.220503}, {"id": "728", "name": "GurunanakCollege", "lat": 12.98758, "lng": 80.22303}, {"id": "284", "name": "GuruvoyalKaranibattai", "lat": 13.21354, "lng": 80.06355}, {"id": "275", "name": "H.V.F.MainGate", "lat": 13.14205, "lng": 80.08767}, {"id": "3533", "name": "Halda", "lat": 13.010985, "lng": 80.222862}, {"id": "33", "name": "Hasthinapuram", "lat": 12.94024, "lng": 80.15067}, {"id": "1516", "name": "HEC", "lat": 12.803026, "lng": 80.223672}, {"id": "3640", "name": "High Court Bus Terminus", "lat": 13.085613, "lng": 80.285091}, {"id": "472", "name": "HighCourt", "lat": 13.0855, "lng": 80.28448}, {"id": "3362", "name": "Hindustan College", "lat": 12.80106, "lng": 80.22352}, {"id": "3444", "name": "Hindustan Engg College", "lat": 12.801308, "lng": 80.223732}, {"id": "4033", "name": "HINDUSTAN_COLLEGE", "lat": 12.801506, "lng": 80.223545}, {"id": "763", "name": "HinduVidyalaya", "lat": 12.98511, "lng": 80.20504}, {"id": "547", "name": "HotelArun", "lat": 13.07304, "lng": 80.22079}, {"id": "3603", "name": "Housing Board Water Tank", "lat": 12.991768, "lng": 80.212653}, {"id": "504", "name": "I.C.F", "lat": 13.09657, "lng": 80.21908}, {"id": "3143", "name": "I.C.F/I.C.F Quarters", "lat": 13.100355, "lng": 80.21509}, {"id": "372", "name": "I.C.I.", "lat": 13.19055, "lng": 80.3136}, {"id": "155", "name": "I.O.html", "lat": 13.14104, "lng": 80.28246}, {"id": "26", "name": "I.R.T.Rd.Jn.", "lat": 12.98156, "lng": 80.23976}, {"id": "497", "name": "IcfAnnexe", "lat": 13.09461, "lng": 80.22354}, {"id": "3345", "name": "IGP", "lat": 12.973769, "lng": 80.250572}, {"id": "3347", "name": "IIT", "lat": 13.006692, "lng": 80.240341}, {"id": "4088", "name": "IIT/CLRI", "lat": 13.007365, "lng": 80.240182}, {"id": "3672", "name": "Indira Nagar Water Tank", "lat": 12.994577, "lng": 80.252523}, {"id": "704", "name": "IndiraNagar", "lat": 12.99235, "lng": 80.25607}, {"id": "703", "name": "IndiraNagarWaterTank", "lat": 12.99507, "lng": 80.25277}, {"id": "3205", "name": "Indra Nagar Water Tank", "lat": 12.995249, "lng": 80.252874}, {"id": "3731", "name": "Infant Jesus Church", "lat": 13.108549, "lng": 80.180245}, {"id": "3616", "name": "Infosys/Aavin", "lat": 12.893152, "lng": 80.227535}, {"id": "60", "name": "Injambakkam", "lat": 12.91698, "lng": 80.25092}, {"id": "4156", "name": "Iraniamman_koil", "lat": 12.897431, "lng": 80.089383}, {"id": "4099", "name": "Iraniamma_ Koil", "lat": 12.89711, "lng": 80.08939}, {"id": "885", "name": "Irumbuliyur", "lat": 12.91774, "lng": 80.10904}, {"id": "3753", "name": "ITC", "lat": 13.17991, "lng": 80.3075}, {"id": "3554", "name": "Iyappanthangal/Ambedkar Silai", "lat": 13.03741, "lng": 80.13865}, {"id": "3248", "name": "Iyyappan Koil", "lat": 12.965314, "lng": 80.191575}, {"id": "3129", "name": "Iyyappan Koil/Amman Koil", "lat": 13.039296, "lng": 80.196936}, {"id": "3633", "name": "Iyyappanthangal Bus Stop", "lat": 13.039084, "lng": 80.132443}, {"id": "3311", "name": "Iyyappanthangal Depot", "lat": 13.038, "lng": 80.135167}, {"id": "680", "name": "JaffarkhanPet", "lat": 13.02874, "lng": 80.2086}, {"id": "3287", "name": "Jain College", "lat": 12.946467, "lng": 80.239581}, {"id": "4011", "name": "JAIN_COLL", "lat": 12.946553, "lng": 80.239864}, {"id": "439", "name": "Jamalaya", "lat": 13.10456, "lng": 80.2529}, {"id": "2000", "name": "JAMUNA", "lat": 12.98665, "lng": 80.23866}, {"id": "3548", "name": "Jayalakshmi Theatre", "lat": 12.991821, "lng": 80.198618}, {"id": "3003", "name": "Jayanthi Signal_Cutservice stop from Kelambakkam", "lat": 12.987671, "lng": 80.255752}, {"id": "3224", "name": "Jayanthi Theatre", "lat": 12.988712, "lng": 80.255806}, {"id": "3252", "name": "Jayanthi Theatre Signal", "lat": 12.987716, "lng": 80.254829}, {"id": "3004", "name": "Jaynathi bus stop on LB  towards ADYAR", "lat": 12.987947, "lng": 80.255745}, {"id": "767", "name": "Jn.Of.PalavanthangalGst", "lat": 12.9941, "lng": 80.18565}, {"id": "895", "name": "Jn.OfMambakkamO.Bakka", "lat": 12.89392, "lng": 80.18023}, {"id": "371", "name": "Jn.OfPonneriRd", "lat": 13.17769, "lng": 80.27023}, {"id": "513", "name": "Jn.OfR.GardenPevrH.", "lat": 13.07427, "lng": 80.21592}, {"id": "733", "name": "Jn.OfRaceCourseRd", "lat": 13.00661, "lng": 80.22054}, {"id": "317", "name": "JN.OF_CENTRAL_AVENUE", "lat": 13.09794, "lng": 80.17663}, {"id": "668", "name": "JnOfIiiAnd1StAve", "lat": 13.0419, "lng": 80.21232}, {"id": "3235", "name": "Joint Office", "lat": 13.099615, "lng": 80.230442}, {"id": "3485", "name": "Jothi Theatre/Kathipara", "lat": 13.007317, "lng": 80.201711}, {"id": "490", "name": "K.M.html", "lat": 13.07781, "lng": 80.24277}, {"id": "858", "name": "Kadaperi", "lat": 12.93256, "lng": 80.12375}, {"id": "279", "name": "KadhavoorRd.Jn.", "lat": 13.18622, "lng": 80.05892}, {"id": "3303", "name": "Kaiveli", "lat": 12.964099, "lng": 80.216072}, {"id": "3760", "name": "Kaladipet", "lat": 13.15386, "lng": 80.29982}, {"id": "678", "name": "KalaignarNagar", "lat": 13.03585, "lng": 80.20465}, {"id": "682", "name": "KalaignarNagarWest", "lat": 13.0444, "lng": 80.19389}, {"id": "3475", "name": "Kalaimagal Nagar", "lat": 13.024735, "lng": 80.206788}, {"id": "3714", "name": "Kalavakkam", "lat": 12.741619, "lng": 80.197187}, {"id": "3698", "name": "Kaliappa/Billroth/R.A.Puram", "lat": 13.027075, "lng": 80.256151}, {"id": "4068", "name": "Kaliappa/Billroth/R.A_Puram", "lat": 13.027075, "lng": 80.256151}, {"id": "4092", "name": "Kaliappa_Hospital/Billroth/R.A_Puram", "lat": 13.02717, "lng": 80.25433}, {"id": "132", "name": "Kallikuppam", "lat": 13.13231, "lng": 80.17299}, {"id": "3407", "name": "Kallukadai", "lat": 13.101761, "lng": 80.211685}, {"id": "3486", "name": "Kalpana", "lat": 13.138993, "lng": 80.227502}, {"id": "3406", "name": "Kalpana Hotel", "lat": 13.103229, "lng": 80.207683}, {"id": "3446", "name": "Kamabar Arangam", "lat": 13.0992, "lng": 80.219767}, {"id": "418", "name": "KamabarArangam", "lat": 13.09883, "lng": 80.22294}, {"id": "3435", "name": "Kamaraj Salai/Nagathamman Koil", "lat": 13.044162, "lng": 80.208882}, {"id": "827", "name": "Kamarajapuram", "lat": 12.97052, "lng": 80.12115}, {"id": "913", "name": "KamarajNagar", "lat": 13.10702, "lng": 80.09441}, {"id": "3331", "name": "Kamatchi Amman Koil", "lat": 13.03094, "lng": 80.11126}, {"id": "3127", "name": "Kambar Arangam", "lat": 13.099025, "lng": 80.219808}, {"id": "3173", "name": "Kanagachathiram", "lat": 13.136228, "lng": 80.231255}, {"id": "3281", "name": "Kandanchavadi", "lat": 12.965317, "lng": 80.247539}, {"id": "720", "name": "KANDAN_CHAVADI", "lat": 12.96082, "lng": 80.24534}, {"id": "872", "name": "Kannadapalayam", "lat": 12.93639, "lng": 80.10046}, {"id": "3315", "name": "Kannagi Nagar", "lat": 12.93129, "lng": 80.2386}, {"id": "3316", "name": "Kannagi Nagar Depot", "lat": 12.925525, "lng": 80.238184}, {"id": "3695", "name": "Kannagi Nagar Market", "lat": 12.928464, "lng": 80.238895}, {"id": "3208", "name": "Kannagi_Statue", "lat": 13.056277, "lng": 80.281705}, {"id": "3543", "name": "Kannammapettai", "lat": 13.030366, "lng": 80.228137}, {"id": "3523", "name": "Kannigapuram", "lat": 13.004494, "lng": 80.220235}, {"id": "337", "name": "Karakku", "lat": 13.11764, "lng": 80.16934}, {"id": "350", "name": "KaranodaiSchool", "lat": 13.24713, "lng": 80.15737}, {"id": "1513", "name": "KARAPAKKAM", "lat": 12.913505, "lng": 80.229147}, {"id": "3505", "name": "Karapakkam Bus Stop", "lat": 12.913905, "lng": 80.229413}, {"id": "163", "name": "Kasanoor", "lat": 13.20352, "lng": 80.02939}, {"id": "3147", "name": "Kasi Theatre", "lat": 13.031519, "lng": 80.209178}, {"id": "3765", "name": "Kasimedu", "lat": 13.1347, "lng": 80.0}, {"id": "1512", "name": "KASTHURBAI_NAGAR", "lat": 13.006164, "lng": 80.247433}, {"id": "3397", "name": "Kathipara/Jothi Theatre", "lat": 13.007304, "lng": 80.201539}, {"id": "4144", "name": "Kattankulathur", "lat": 12.809058, "lng": 80.02917}, {"id": "803", "name": "KattuKootRoad", "lat": 13.01551, "lng": 79.92774}, {"id": "3118", "name": "Kattupakkam", "lat": 13.040646, "lng": 80.128795}, {"id": "359", "name": "Kavangarai", "lat": 13.16959, "lng": 80.19959}, {"id": "3175", "name": "Kavankarai", "lat": 13.170475, "lng": 80.199187}, {"id": "285", "name": "Kavaraipalayam", "lat": 13.11935, "lng": 80.07986}, {"id": "377", "name": "KaviarasuKannadasanNaga", "lat": 13.13649, "lng": 80.25581}, {"id": "3164", "name": "Kazhipattur", "lat": 12.819577, "lng": 80.230362}, {"id": "3220", "name": "Keelkatalai", "lat": 12.955813, "lng": 80.186972}, {"id": "68", "name": "Keerapakkam", "lat": 12.82791, "lng": 80.16533}, {"id": "1517", "name": "KELAMBAKKAM", "lat": 12.786676, "lng": 80.220558}, {"id": "487", "name": "Kelleys", "lat": 13.08226, "lng": 80.24363}, {"id": "281", "name": "KesavaCrossRoad", "lat": 13.18028, "lng": 80.02922}, {"id": "4139", "name": "Kilekarni", "lat": 12.77686, "lng": 80.01012}, {"id": "3651", "name": "Kilkatalai Depot", "lat": 12.956132, "lng": 80.186786}, {"id": "834", "name": "Kilkattalai", "lat": 12.95409, "lng": 80.18601}, {"id": "3447", "name": "Kilpauk Garden", "lat": 13.083758, "lng": 80.233512}, {"id": "502", "name": "KilpaukGarden", "lat": 13.08374, "lng": 80.23358}, {"id": "3432", "name": "Kk Nagar", "lat": 13.035947, "lng": 80.205273}, {"id": "3683", "name": "Kk Nagar Depot", "lat": 13.035624, "lng": 80.20609}, {"id": "387", "name": "KodungaiyurO.T.", "lat": 13.13858, "lng": 80.24345}, {"id": "375", "name": "KodungaiyurParvathinagar", "lat": 13.14568, "lng": 80.25049}, {"id": "120", "name": "KoladiSchool", "lat": 13.08658, "lng": 80.13256}, {"id": "70", "name": "Kolapakkam", "lat": 12.87088, "lng": 80.10544}, {"id": "123", "name": "Kolappanchery", "lat": 13.07923, "lng": 80.07265}, {"id": "301", "name": "Kolathur/NehruRdJn", "lat": 13.13003, "lng": 80.2141}, {"id": "818", "name": "Kollaicheri", "lat": 13.00924, "lng": 80.10115}, {"id": "3448", "name": "Koman Nagar Road Junction", "lat": 12.744287, "lng": 80.200479}, {"id": "236", "name": "Kondakkarai", "lat": 13.24228, "lng": 80.27384}, {"id": "327", "name": "KonimeduRd.Jn.", "lat": 13.08838, "lng": 80.12303}, {"id": "817", "name": "Koovoor", "lat": 13.01026, "lng": 80.11831}, {"id": "303", "name": "Korattur", "lat": 13.1125, "lng": 80.18354}, {"id": "148", "name": "KorukkupetR.S", "lat": 13.11856, "lng": 80.27804}, {"id": "128", "name": "Kosapalayam", "lat": 13.09419, "lng": 80.02055}, {"id": "255", "name": "Kosappur", "lat": 13.18371, "lng": 80.23438}, {"id": "57", "name": "Kottivakkam", "lat": 12.97027, "lng": 80.25805}, {"id": "3597", "name": "Kottur", "lat": 13.01855, "lng": 80.24126}, {"id": "4089", "name": "Kottur/Anna_Library", "lat": 13.018676, "lng": 80.241195}, {"id": "713", "name": "Kotturpuram", "lat": 13.01995, "lng": 80.24105}, {"id": "62", "name": "Kovalam", "lat": 12.78667, "lng": 80.24991}, {"id": "3574", "name": "Kovilambakkam Bus Stop", "lat": 12.938958, "lng": 80.182345}, {"id": "66", "name": "KovilamcherryVillage", "lat": 12.88226, "lng": 80.17101}, {"id": "3350", "name": "Koyambedu Busstand", "lat": 13.06811, "lng": 80.20547}, {"id": "512", "name": "KoyambeduRohiniTheater", "lat": 13.07511, "lng": 80.19509}, {"id": "3605", "name": "Krishna Sweets", "lat": 12.99718, "lng": 80.21046}, {"id": "655", "name": "KrishnanTemple/PondyBaz", "lat": 13.04035, "lng": 80.23992}, {"id": "3117", "name": "Kumananchavadi", "lat": 13.044864, "lng": 80.116036}, {"id": "3283", "name": "Kumaran Nagar", "lat": 12.877097, "lng": 80.226788}, {"id": "842", "name": "KumaranKundram", "lat": 12.94229, "lng": 80.1417}, {"id": "4042", "name": "KUMARAN_NAGAR", "lat": 12.877518, "lng": 80.226742}, {"id": "346", "name": "Kummanur", "lat": 13.21856, "lng": 80.19539}, {"id": "790", "name": "Kumunanchavadi", "lat": 13.04479, "lng": 80.11634}, {"id": "825", "name": "KundrathurB.S", "lat": 12.99803, "lng": 80.09651}, {"id": "81", "name": "Kuthambakkam", "lat": 13.05682, "lng": 80.03222}, {"id": "94", "name": "LadyMctmSchool/Millers", "lat": 13.08466, "lng": 80.24985}, {"id": "3615", "name": "Lattice Bridge", "lat": 12.98619, "lng": 80.25552}, {"id": "244", "name": "LATTICE_BRIDGE", "lat": 12.98198, "lng": 80.25272}, {"id": "3744", "name": "Leyland", "lat": 13.21024, "lng": 80.31672}, {"id": "3745", "name": "Leyland PO", "lat": 13.20695, "lng": 80.31542}, {"id": "3413", "name": "LIC", "lat": 13.065774, "lng": 80.26781}, {"id": "3752", "name": "Lift gate", "lat": 13.18497, "lng": 80.31135}, {"id": "3393", "name": "Little Mount/Saidapet Court/Chinnamalai", "lat": 13.015294, "lng": 80.224711}, {"id": "4001", "name": "LITTLE_MOUNT", "lat": 13.014339, "lng": 80.226308}, {"id": "305", "name": "LucasTvs", "lat": 13.10188, "lng": 80.19299}, {"id": "601", "name": "Luz", "lat": 13.03692, "lng": 80.26757}, {"id": "428", "name": "M.K.B.Nagar", "lat": 13.12312, "lng": 80.25916}, {"id": "427", "name": "M.K.B.NagarEast", "lat": 13.12295, "lng": 80.2656}, {"id": "3277", "name": "M.M.D.A", "lat": 13.064892, "lng": 80.21145}, {"id": "3496", "name": "M.M.D.A Bus Stop", "lat": 13.062929, "lng": 80.21152}, {"id": "534", "name": "M.M.D.A.Colony", "lat": 13.06476, "lng": 80.21135}, {"id": "538", "name": "M.M.D.A.ColonyRd.Jn.", "lat": 13.06385, "lng": 80.21178}, {"id": "384", "name": "MadahvaramVillage", "lat": 13.14853, "lng": 80.23006}, {"id": "131", "name": "Madanakuppam", "lat": 13.13532, "lng": 80.19103}, {"id": "385", "name": "Madhavaram", "lat": 13.13766, "lng": 80.22955}, {"id": "3178", "name": "Madhavaram Bypass", "lat": 13.144035, "lng": 80.220947}, {"id": "3172", "name": "Madhavaram Depot", "lat": 13.13195, "lng": 80.237081}, {"id": "386", "name": "MadhavaramMillkColony", "lat": 13.15187, "lng": 80.24208}, {"id": "388", "name": "MadhavaramPostBox", "lat": 13.14284, "lng": 80.23624}, {"id": "3389", "name": "Madhya Kailash/CLRI", "lat": 13.006605, "lng": 80.246591}, {"id": "1506", "name": "MADHYAKAILASH", "lat": 13.006626, "lng": 80.246391}, {"id": "3427", "name": "MadhyaKailash/Gandhi Nagar", "lat": 13.006696, "lng": 80.249531}, {"id": "4004", "name": "MADHYA_KAILASH", "lat": 13.006232, "lng": 80.247461}, {"id": "3371", "name": "Madipakkam koot road", "lat": 12.968106, "lng": 80.189507}, {"id": "30", "name": "MadipakkamB.S", "lat": 12.96575, "lng": 80.20187}, {"id": "784", "name": "MadipakkamRd.Jn.", "lat": 12.96605, "lng": 80.18866}, {"id": "692", "name": "Maduravoyal", "lat": 13.0615, "lng": 80.1644}, {"id": "3346", "name": "Maduvinkarai", "lat": 13.00419, "lng": 80.21224}, {"id": "3556", "name": "Mahalakshmi nagar", "lat": 12.922695, "lng": 80.146978}, {"id": "3561", "name": "Mahalakshmi Nagar Junction Bus Stop", "lat": 12.922562, "lng": 80.147442}, {"id": "47", "name": "MahalakshmiNagar", "lat": 12.92292, "lng": 80.14775}, {"id": "617", "name": "Mahalingapuram", "lat": 13.05801, "lng": 80.23506}, {"id": "4134", "name": "Mahindra_City", "lat": 12.74387, "lng": 79.99268}, {"id": "2001", "name": "MAIN_GATE", "lat": 13.00539, "lng": 80.24188}, {"id": "909", "name": "Malrosapuram", "lat": 12.83846, "lng": 80.15571}, {"id": "381", "name": "Manali", "lat": 13.17076, "lng": 80.25667}, {"id": "373", "name": "ManaliRdJn.", "lat": 13.1614, "lng": 80.26886}, {"id": "806", "name": "ManapakkamP.U.O", "lat": 13.01659, "lng": 80.17713}, {"id": "80", "name": "ManapakkamVillage", "lat": 13.01208, "lng": 80.16666}, {"id": "908", "name": "Manchankaranai", "lat": 13.27127, "lng": 80.10666}, {"id": "648", "name": "Mandaveli", "lat": 13.02668, "lng": 80.26572}, {"id": "3388", "name": "Mandaveli Bus stand", "lat": 13.025321, "lng": 80.265388}, {"id": "3122", "name": "Mandaveli Market/Post Office", "lat": 13.02935, "lng": 80.265687}, {"id": "4094", "name": "Mandaveli_Market/Post_Office", "lat": 13.02935, "lng": 80.265687}, {"id": "4065", "name": "Mandaveli_Terminus", "lat": 13.026682, "lng": 80.265724}, {"id": "3121", "name": "Mandhaveli Bus Stand/CID Quarters", "lat": 13.026527, "lng": 80.263842}, {"id": "3387", "name": "Mandhaveli Market", "lat": 13.029725, "lng": 80.266642}, {"id": "4066", "name": "Mandhaveli_Bus_Stand/CID_Quarters", "lat": 13.026527, "lng": 80.263842}, {"id": "816", "name": "Mangadu", "lat": 13.0273, "lng": 80.1105}, {"id": "3635", "name": "Mangadu Bus Stand", "lat": 13.031438, "lng": 80.111092}, {"id": "3489", "name": "Mangadu Koil", "lat": 13.03178, "lng": 80.11108}, {"id": "72", "name": "Manivakkam", "lat": 12.89548, "lng": 80.06166}, {"id": "4143", "name": "Maraimalai_Nagar", "lat": 12.799837, "lng": 80.023155}, {"id": "225", "name": "MaternityHospital", "lat": 13.0707, "lng": 80.25813}, {"id": "3710", "name": "Matha Koil", "lat": 13.111471, "lng": 80.265523}, {"id": "3532", "name": "Medavakkam Bus Stop", "lat": 12.917165, "lng": 80.193141}, {"id": "3528", "name": "Medavakkam Koot Road", "lat": 12.919909, "lng": 80.182628}, {"id": "3626", "name": "Medavakkam Koot Road Bus Stop", "lat": 12.920695, "lng": 80.185302}, {"id": "3527", "name": "Medavakkam New Bus Stop", "lat": 12.917219, "lng": 80.191525}, {"id": "3484", "name": "Medavakkam Tank", "lat": 13.08828, "lng": 80.241908}, {"id": "698", "name": "Melpakkam", "lat": 13.08633, "lng": 80.1087}, {"id": "768", "name": "MENAMABAKKAM_OLD_AIRPORT", "lat": 12.9899, "lng": 80.17953}, {"id": "295", "name": "Menambedu", "lat": 13.12592, "lng": 80.16831}, {"id": "3158", "name": "Mental Hospital", "lat": 13.090511, "lng": 80.240799}, {"id": "905", "name": "MeppaduHospital", "lat": 12.89121, "lng": 80.14071}, {"id": "794", "name": "Meppur", "lat": 13.02931, "lng": 80.08338}, {"id": "3286", "name": "Mettukuppam", "lat": 12.939086, "lng": 80.235267}, {"id": "700", "name": "Mettupalayam", "lat": 13.08088, "lng": 80.09572}, {"id": "3433", "name": "MGR Nagar", "lat": 13.036403, "lng": 80.202076}, {"id": "3424", "name": "MGR Nagar Market", "lat": 13.036289, "lng": 80.201583}, {"id": "3138", "name": "Military Quarters", "lat": 13.032125, "lng": 80.242102}, {"id": "227", "name": "MinjurB.D.O", "lat": 13.27687, "lng": 80.25959}, {"id": "3538", "name": "Mint New/Vallalar Nagar", "lat": 13.104198, "lng": 80.275905}, {"id": "3476", "name": "Mint New/Vallalar Nagar/Thanga Salai", "lat": 13.1045, "lng": 80.27586}, {"id": "804", "name": "Mogalivakkam", "lat": 13.03015, "lng": 80.16767}, {"id": "308", "name": "MogapairEast", "lat": 13.08008, "lng": 80.1802}, {"id": "116", "name": "MogapairWest", "lat": 13.08282, "lng": 80.17033}, {"id": "392", "name": "Moolakadai", "lat": 13.1293, "lng": 80.24131}, {"id": "3544", "name": "Moolakadai Bypass Bus Stand", "lat": 13.144367, "lng": 80.219529}, {"id": "3323", "name": "Moon Light", "lat": 13.025214, "lng": 80.175874}, {"id": "3452", "name": "Mootakaran Chavadi", "lat": 12.929949, "lng": 80.231094}, {"id": "59", "name": "MOOTAKARAN_CHAVADI", "lat": 12.92995, "lng": 80.23109}, {"id": "777", "name": "Moovarasanpet", "lat": 12.96991, "lng": 80.18638}, {"id": "278", "name": "Morai", "lat": 13.17715, "lng": 80.07653}, {"id": "3161", "name": "Motcham Theatre", "lat": 13.08467, "lng": 80.250119}, {"id": "807", "name": "Moulivakkam", "lat": 13.01986, "lng": 80.14312}, {"id": "3207", "name": "MRC_Nagar", "lat": 13.021257, "lng": 80.270174}, {"id": "3773", "name": "MTC", "lat": 13.08182, "lng": 80.0}, {"id": "3141", "name": "Mugalivakkam", "lat": 13.029007, "lng": 80.169151}, {"id": "3594", "name": "Mullai Nagar", "lat": 13.12269, "lng": 80.26575}, {"id": "889", "name": "MullaiNagar", "lat": 12.91598, "lng": 80.06527}, {"id": "3601", "name": "Murugan Kalyana Mandabam", "lat": 12.984042, "lng": 80.217986}, {"id": "3750", "name": "Murugan koil", "lat": 13.1865, "lng": 80.305}, {"id": "809", "name": "MuruganKoil/Girugambak", "lat": 13.01074, "lng": 80.14057}, {"id": "3465", "name": "Music_College", "lat": 13.018914, "lng": 80.263148}, {"id": "3005", "name": "Muthu pharmacy stop on LB  after Jayanthi towards KEL", "lat": 12.987182, "lng": 80.255722}, {"id": "3628", "name": "Muttukkaranchavadi", "lat": 12.930504, "lng": 80.231753}, {"id": "602", "name": "MYLAPORE", "lat": 13.03232, "lng": 80.26714}, {"id": "3123", "name": "Mylapore Tank", "lat": 13.03374, "lng": 80.267835}, {"id": "3453", "name": "N.G.O.Colony", "lat": 12.994783, "lng": 80.20654}, {"id": "457", "name": "N4PoliceStation", "lat": 13.13448, "lng": 80.29736}, {"id": "95", "name": "Naduvankarai", "lat": 13.07705, "lng": 80.21067}, {"id": "865", "name": "Naduveerapattu", "lat": 12.942, "lng": 80.04948}, {"id": "829", "name": "Nagalkeni", "lat": 12.95939, "lng": 80.13033}, {"id": "3764", "name": "Nahoorar thottam", "lat": 13.14788, "lng": 80.0}, {"id": "3461", "name": "Nallalaghu Nadar Polytechnic College", "lat": 13.178702, "lng": 80.194548}, {"id": "920", "name": "Nallur", "lat": 13.28339, "lng": 80.24405}, {"id": "3421", "name": "Nandanam Housing Board", "lat": 13.029611, "lng": 80.237099}, {"id": "3110", "name": "Nandanam/YMCA", "lat": 13.029063, "lng": 80.23681}, {"id": "3340", "name": "Nandhambakkam", "lat": 13.01677, "lng": 80.18954}, {"id": "3310", "name": "Nandhambakkam/Trade Centre", "lat": 13.016321, "lng": 80.189709}, {"id": "3541", "name": "Nandhanam Post Office/Military Quarters", "lat": 13.031786, "lng": 80.241015}, {"id": "774", "name": "Nanganallur", "lat": 12.98047, "lng": 80.18286}, {"id": "49", "name": "NanmabgalamRd.Jn.", "lat": 12.91711, "lng": 80.192}, {"id": "258", "name": "Napalayam", "lat": 13.22123, "lng": 80.27264}, {"id": "840", "name": "Narayanapuram", "lat": 12.93898, "lng": 80.20526}, {"id": "3386", "name": "Narayanasamy Thottam", "lat": 13.020148, "lng": 80.262569}, {"id": "3154", "name": "Nathamuni", "lat": 13.103379, "lng": 80.201712}, {"id": "415", "name": "NathamuniTalkies", "lat": 13.10347, "lng": 80.20294}, {"id": "848", "name": "NationalHighSchool", "lat": 12.93561, "lng": 80.13057}, {"id": "3165", "name": "Navallur", "lat": 12.844897, "lng": 80.226492}, {"id": "3634", "name": "Navallur Church", "lat": 12.821599, "lng": 80.23063}, {"id": "64", "name": "Navalur", "lat": 12.84525, "lng": 80.22648}, {"id": "310", "name": "Nerkundram", "lat": 13.07162, "lng": 80.18569}, {"id": "3422", "name": "Nesapakkam", "lat": 13.038587, "lng": 80.192784}, {"id": "4128", "name": "New_Chengalpet", "lat": 12.691175, "lng": 79.980791}, {"id": "3487", "name": "NGO Colony Depot", "lat": 12.994615, "lng": 80.206586}, {"id": "3195", "name": "Noor Hotel", "lat": 13.098416, "lng": 80.234901}, {"id": "46", "name": "Noothancheri", "lat": 12.90084, "lng": 80.16852}, {"id": "613", "name": "NungambakkamR.S", "lat": 13.06552, "lng": 80.23401}, {"id": "2010", "name": "Odai", "lat": 12.887946, "lng": 80.227263}, {"id": "3583", "name": "Oil Mill", "lat": 12.977725, "lng": 80.193849}, {"id": "4014", "name": "OKKIYAMPET", "lat": 12.925828, "lng": 80.231061}, {"id": "3254", "name": "Okkiyampettai", "lat": 12.925832, "lng": 80.231046}, {"id": "3690", "name": "Old Mint", "lat": 13.106448, "lng": 80.279954}, {"id": "4129", "name": "Old_Chengalpet", "lat": 12.696929, "lng": 79.976735}, {"id": "3029", "name": "On LB road towards Kelambakam from Adyar", "lat": 12.996715, "lng": 80.255908}, {"id": "3030", "name": "On LB road towards Saidapet from Adyar Depot", "lat": 12.997863, "lng": 80.255884}, {"id": "289", "name": "OragadamO.T.", "lat": 13.12429, "lng": 80.15093}, {"id": "3188", "name": "Otteri", "lat": 13.097842, "lng": 80.252587}, {"id": "3231", "name": "Otteri TB Hospital", "lat": 13.096818, "lng": 80.245787}, {"id": "527", "name": "P.O.R._SONS", "lat": 13.07061, "lng": 80.2739}, {"id": "443", "name": "P1.PoliceStation", "lat": 13.09873, "lng": 80.25976}, {"id": "445", "name": "P1P.S", "lat": 13.1, "lng": 80.26006}, {"id": "891", "name": "Padappai", "lat": 12.88578, "lng": 80.01549}, {"id": "760", "name": "PadavattammanSchool", "lat": 12.99527, "lng": 80.20114}, {"id": "3233", "name": "Padi Edatheru", "lat": 13.100094, "lng": 80.186512}, {"id": "164", "name": "Padiyanallur", "lat": 13.20736, "lng": 80.1729}, {"id": "3267", "name": "Padma Sheshadri School", "lat": 13.038956, "lng": 80.198653}, {"id": "3361", "name": "Padur", "lat": 12.804429, "lng": 80.224224}, {"id": "701", "name": "Padurmedu", "lat": 13.04729, "lng": 80.0257}, {"id": "56", "name": "Palavakkam", "lat": 12.9568, "lng": 80.25487}, {"id": "3454", "name": "Palavasthic Chemicals", "lat": 12.816585, "lng": 80.229683}, {"id": "1515", "name": "PALAVASTIC_CHEMICALS", "lat": 12.816585, "lng": 80.22968}, {"id": "3416", "name": "Pallavan House/PTC", "lat": 13.07531, "lng": 80.276397}, {"id": "65", "name": "PallavanNagar", "lat": 12.91539, "lng": 80.19436}, {"id": "241", "name": "Pallavaram", "lat": 12.96809, "lng": 80.14887}, {"id": "3495", "name": "Pallavaram Bus Stand", "lat": 12.969269, "lng": 80.150188}, {"id": "3146", "name": "Pallavaram Depot/Bus Stand", "lat": 12.968621, "lng": 80.149611}, {"id": "4077", "name": "Pallavaram_Bus_Stand", "lat": 12.969269, "lng": 80.150188}, {"id": "3355", "name": "Pallikaranai", "lat": 12.93396, "lng": 80.20384}, {"id": "3354", "name": "Pallikkaranai Oil Mill", "lat": 12.92954, "lng": 80.20283}, {"id": "3353", "name": "Pallikkarani", "lat": 12.93389, "lng": 80.20395}, {"id": "159", "name": "PammadukulamColony", "lat": 13.19382, "lng": 80.17333}, {"id": "832", "name": "Pammal", "lat": 12.97495, "lng": 80.13411}, {"id": "707", "name": "Panaiyur", "lat": 12.89966, "lng": 80.2474}, {"id": "815", "name": "Paraniputhur", "lat": 13.02112, "lng": 80.12492}, {"id": "4133", "name": "Paranur_RTO", "lat": 12.73791, "lng": 79.98805}, {"id": "3105", "name": "Park Town/Rippon Building", "lat": 13.081297, "lng": 80.273259}, {"id": "3204", "name": "Park/Corporation Building/Central", "lat": 13.08119, "lng": 80.271156}, {"id": "477", "name": "Parrys", "lat": 13.08888, "lng": 80.2904}, {"id": "3134", "name": "Parrys_Corner", "lat": 13.088863, "lng": 80.289717}, {"id": "130", "name": "Pattabiram", "lat": 13.12103, "lng": 80.06475}, {"id": "3189", "name": "Pattalam", "lat": 13.097346, "lng": 80.258067}, {"id": "234", "name": "Pattamandiri", "lat": 13.26267, "lng": 80.27384}, {"id": "3135", "name": "Pattinambakkam", "lat": 13.026128, "lng": 80.275338}, {"id": "3137", "name": "Pattinambakkam_Arch", "lat": 13.02531, "lng": 80.274815}, {"id": "3332", "name": "Pattu Koot Road/X Road", "lat": 13.027108, "lng": 80.110871}, {"id": "3488", "name": "Pattu Road Junction", "lat": 13.026989, "lng": 80.110643}, {"id": "3607", "name": "Pattur Bus Stop", "lat": 13.023196, "lng": 80.1185}, {"id": "45", "name": "Pazhanthandalam", "lat": 12.95856, "lng": 80.07892}, {"id": "230", "name": "Pazhaverkadu", "lat": 13.41817, "lng": 80.31487}, {"id": "4142", "name": "Peramanur", "lat": 12.79488, "lng": 80.01985}, {"id": "4113", "name": "Peramanur/Saamiyar_Gate", "lat": 12.794314, "lng": 80.019874}, {"id": "437", "name": "PeramburB.S", "lat": 13.10857, "lng": 80.24792}, {"id": "434", "name": "PeramburMarket", "lat": 13.11423, "lng": 80.25276}, {"id": "349", "name": "Periamullaivoyal", "lat": 13.2478, "lng": 80.23075}, {"id": "3520", "name": "Periyamet Bus Stop", "lat": 13.084268, "lng": 80.270375}, {"id": "812", "name": "Periyapanicheri", "lat": 13.01419, "lng": 80.13434}, {"id": "3756", "name": "Periyar nagar", "lat": 13.16781, "lng": 80.3035}, {"id": "525", "name": "PeriyarBridge", "lat": 13.07163, "lng": 80.27442}, {"id": "405", "name": "PeriyarNagar", "lat": 13.11434, "lng": 80.22371}, {"id": "50", "name": "PerumbakkamLimit", "lat": 12.90745, "lng": 80.20088}, {"id": "3474", "name": "Perungalathur", "lat": 12.906183, "lng": 80.095984}, {"id": "883", "name": "Perungalathur(Old)", "lat": 12.91974, "lng": 80.08707}, {"id": "240", "name": "Perungavoor", "lat": 13.21747, "lng": 80.21921}, {"id": "3288", "name": "Perungudi", "lat": 12.958922, "lng": 80.2444}, {"id": "893", "name": "Perungulathur", "lat": 12.90494, "lng": 80.09548}, {"id": "636", "name": "PicturePost", "lat": 13.05155, "lng": 80.22165}, {"id": "3570", "name": "Pillaiyar Koil", "lat": 13.0412, "lng": 80.20515}, {"id": "3545", "name": "Pillaiyar Koil/Sivan Park", "lat": 13.04074, "lng": 80.20514}, {"id": "3725", "name": "Pillar/Vyasarpadi Market", "lat": 13.114316, "lng": 80.265778}, {"id": "3187", "name": "Podi Kadai", "lat": 13.097426, "lng": 80.248148}, {"id": "228", "name": "Pollachiammankulam", "lat": 13.40231, "lng": 80.2771}, {"id": "283", "name": "Polytechnic", "lat": 13.12596, "lng": 80.119}, {"id": "3269", "name": "Pondicherry Guest House", "lat": 13.041874, "lng": 80.193628}, {"id": "3101", "name": "Pondy Bazaar", "lat": 13.040338, "lng": 80.239431}, {"id": "651", "name": "PondyBazaar", "lat": 13.04026, "lng": 80.24028}, {"id": "4020", "name": "PONNIAMMAN", "lat": 12.885759, "lng": 80.226951}, {"id": "3247", "name": "Ponniamman Koil", "lat": 12.964744, "lng": 80.196872}, {"id": "764", "name": "PonniammanKoilRd.Jn.", "lat": 12.96475, "lng": 80.19615}, {"id": "4043", "name": "PONNIAMMAN_KOIL", "lat": 12.886138, "lng": 80.226806}, {"id": "3636", "name": "Poo Colony", "lat": 12.810274, "lng": 80.227836}, {"id": "401", "name": "Poombuhar", "lat": 13.12394, "lng": 80.21225}, {"id": "799", "name": "Poonamallee", "lat": 13.04931, "lng": 80.10443}, {"id": "4034", "name": "POO_COMPANY", "lat": 12.809799, "lng": 80.227448}, {"id": "3774", "name": "Porr&sons", "lat": 13.07512, "lng": 80.0}, {"id": "795", "name": "PORUR", "lat": 13.03475, "lng": 80.15616}, {"id": "558", "name": "PostalAuditOffice", "lat": 13.06359, "lng": 80.26139}, {"id": "41", "name": "Pozhichalur", "lat": 12.98984, "lng": 80.14183}, {"id": "910", "name": "PrithiyangaraDeviTemple", "lat": 12.89988, "lng": 80.23501}, {"id": "3693", "name": "PTC Quarters", "lat": 12.935665, "lng": 80.234156}, {"id": "3162", "name": "PTC Quarters/Mutakaranchavadi", "lat": 12.934265, "lng": 80.233206}, {"id": "4013", "name": "PTC_QUARTRES", "lat": 12.934222, "lng": 80.23321}, {"id": "4050", "name": "PTC_QUATRES", "lat": 12.932923, "lng": 80.23238}, {"id": "3483", "name": "Pudhupettai Market", "lat": 13.070285, "lng": 80.265819}, {"id": "238", "name": "Pudukuppam", "lat": 13.27504, "lng": 80.19857}, {"id": "823", "name": "PudupeirCootRoad", "lat": 12.976, "lng": 80.0498}, {"id": "3160", "name": "Pudupet", "lat": 13.071619, "lng": 80.264633}, {"id": "296", "name": "Pudur", "lat": 13.13039, "lng": 80.15857}, {"id": "638", "name": "PudurHighSchool", "lat": 13.04241, "lng": 80.21654}, {"id": "4131", "name": "Pulipakkam", "lat": 12.711528, "lng": 79.978754}, {"id": "3375", "name": "Puliyamaram", "lat": 12.920407, "lng": 80.196593}, {"id": "3462", "name": "Purasaiwalkam Tank", "lat": 13.083888, "lng": 80.254631}, {"id": "888", "name": "PushpagiriRd.Jn.", "lat": 12.92183, "lng": 80.01952}, {"id": "612", "name": "PushpaNagar", "lat": 13.05851, "lng": 80.24071}, {"id": "3170", "name": "Puzhal Central Jail", "lat": 13.164228, "lng": 80.202287}, {"id": "776", "name": "PuzhithivakkamB.S", "lat": 12.9747, "lng": 80.20346}, {"id": "3546", "name": "Puzhudhivakkam/Kumaran Theatre Bus Stop", "lat": 12.972168, "lng": 80.191325}, {"id": "600", "name": "Q.M.html", "lat": 13.04336, "lng": 80.27916}, {"id": "927", "name": "Q.MArts(Men)", "lat": 12.92041, "lng": 80.18337}, {"id": "3124", "name": "Queen_Marys_College", "lat": 13.043319, "lng": 80.277513}, {"id": "628", "name": "R020", "lat": 13.04666, "lng": 80.23273}, {"id": "3430", "name": "Raghavan Colony Park", "lat": 13.030499, "lng": 80.216848}, {"id": "3196", "name": "Railway Quarters", "lat": 13.099781, "lng": 80.225135}, {"id": "3467", "name": "Rajaji Bhavan", "lat": 13.003147, "lng": 80.268658}, {"id": "3761", "name": "Rajakadai", "lat": 13.15134, "lng": 80.29837}, {"id": "4132", "name": "Rajakulipettai", "lat": 12.71653, "lng": 79.98061}, {"id": "3298", "name": "Ram Nagar", "lat": 12.965333, "lng": 80.207}, {"id": "3109", "name": "Ramachandra Hospital/SRMC", "lat": 13.036559, "lng": 80.142928}, {"id": "796", "name": "RamachandraMedl.College", "lat": 13.03672, "lng": 80.14249}, {"id": "3719", "name": "Ramalinga swamy", "lat": 13.109032, "lng": 80.267099}, {"id": "20", "name": "Ramapuram", "lat": 13.02112, "lng": 80.18346}, {"id": "686", "name": "Ramapuram(L.N.PKoil)", "lat": 13.03327, "lng": 80.17479}, {"id": "3119", "name": "Ranimeyammai", "lat": 13.022757, "lng": 80.263839}, {"id": "3619", "name": "RBI", "lat": 13.082862, "lng": 80.289028}, {"id": "3272", "name": "Red Hills", "lat": 13.192835, "lng": 80.18392}, {"id": "3526", "name": "Red Hills Depot", "lat": 13.192905, "lng": 80.184347}, {"id": "3176", "name": "Red Hills Market", "lat": 13.189566, "lng": 80.187484}, {"id": "345", "name": "RedHills", "lat": 13.1914, "lng": 80.18552}, {"id": "3624", "name": "Redhills Market", "lat": 13.189359, "lng": 80.187542}, {"id": "109", "name": "Regal", "lat": 13.09277, "lng": 80.27513}, {"id": "3312", "name": "Retteri/Chettiyar Agaram", "lat": 13.036159, "lng": 80.146269}, {"id": "5", "name": "RoyapettaHospital", "lat": 13.05377, "lng": 80.26564}, {"id": "365", "name": "Royapuram", "lat": 13.1213, "lng": 80.29354}, {"id": "3767", "name": "Royapuram Market", "lat": 13.11556, "lng": 80.0}, {"id": "3766", "name": "Royapuram PS", "lat": 13.12562, "lng": 80.0}, {"id": "366", "name": "RoyapuramP.S", "lat": 13.10893, "lng": 80.29177}, {"id": "663", "name": "S.H.B", "lat": 13.03021, "lng": 80.24075}, {"id": "3478", "name": "S.I.E.T college", "lat": 13.035355, "lng": 80.246172}, {"id": "894", "name": "S.I.V.E.html", "lat": 12.92135, "lng": 80.16673}, {"id": "393", "name": "S.R.P.Colony", "lat": 13.12169, "lng": 80.22371}, {"id": "3246", "name": "Sadasivam Nagar", "lat": 12.965466, "lng": 80.204747}, {"id": "12", "name": "SAIDAPET", "lat": 13.021571, "lng": 80.226036}, {"id": "3115", "name": "Saidapet/Bali Towers", "lat": 13.018918, "lng": 80.224303}, {"id": "4063", "name": "SAIDAPET_ARCH", "lat": 13.019135, "lng": 80.22427}, {"id": "4064", "name": "SAIDAPET_BUS_STOP", "lat": 13.022131, "lng": 80.226231}, {"id": "732", "name": "SAIDAPET_COURT", "lat": 13.01551, "lng": 80.2256}, {"id": "14", "name": "SAIDAPET_WEST", "lat": 13.02496, "lng": 80.21951}, {"id": "3324", "name": "Sakthi nagar", "lat": 13.032325, "lng": 80.163137}, {"id": "643", "name": "Saligraman", "lat": 13.05312, "lng": 80.19721}, {"id": "3623", "name": "Samiyar Madam", "lat": 13.179195, "lng": 80.194215}, {"id": "3464", "name": "Santhome Church", "lat": 13.03121, "lng": 80.27753}, {"id": "3708", "name": "Santhome High Road", "lat": 13.030993, "lng": 80.277428}, {"id": "3569", "name": "Santhome High School", "lat": 13.032549, "lng": 80.277371}, {"id": "3550", "name": "Santhome_High_road/ Santhome_Employement_Office", "lat": 13.02996, "lng": 80.276748}, {"id": "599", "name": "SANTHOME_P.O.", "lat": 13.03322, "lng": 80.27783}, {"id": "3459", "name": "Santhosapuram", "lat": 12.919733, "lng": 80.171167}, {"id": "3262", "name": "Santhoshapuram", "lat": 12.919968, "lng": 80.170959}, {"id": "137", "name": "SarmaNagar", "lat": 13.12153, "lng": 80.25298}, {"id": "261", "name": "SathiyamoorthyNagar", "lat": 13.17845, "lng": 80.29633}, {"id": "453", "name": "SathumaNagar", "lat": 13.14973, "lng": 80.29916}, {"id": "3535", "name": "Sathyabama", "lat": 12.87281, "lng": 80.22654}, {"id": "4022", "name": "SATHYABAMA_UNIVERSITY", "lat": 12.87207, "lng": 80.226777}, {"id": "4041", "name": "SATHYABAM_UNIVERSITY", "lat": 12.87106, "lng": 80.226488}, {"id": "4135", "name": "Sathya_nagar", "lat": 12.75013, "lng": 79.99783}, {"id": "3194", "name": "Sayani", "lat": 13.097751, "lng": 80.238714}, {"id": "102", "name": "Sayani/Aynavaram", "lat": 13.09683, "lng": 80.24182}, {"id": "300", "name": "ScrewFactory", "lat": 13.15894, "lng": 80.19699}, {"id": "172", "name": "Secretariat", "lat": 13.07965, "lng": 80.28791}, {"id": "752", "name": "SecretariatColony", "lat": 12.99446, "lng": 80.20655}, {"id": "351", "name": "Seemavaram", "lat": 13.26075, "lng": 80.25217}, {"id": "4053", "name": "SEEVARAM", "lat": 12.951035, "lng": 80.241244}, {"id": "3255", "name": "Sembakkam", "lat": 12.923098, "lng": 80.16062}, {"id": "165", "name": "Semilivaram", "lat": 13.22457, "lng": 80.16638}, {"id": "1514", "name": "SEMMANCHERY", "lat": 12.86976, "lng": 80.22669}, {"id": "3655", "name": "Semmanchery Alamaram", "lat": 12.859812, "lng": 80.226491}, {"id": "4040", "name": "SEMMENCHERY", "lat": 12.861583, "lng": 80.226458}, {"id": "3166", "name": "Semmenchery Alamaram", "lat": 12.860492, "lng": 80.226449}, {"id": "3284", "name": "Semmenchery U.S", "lat": 12.879292, "lng": 80.211006}, {"id": "324", "name": "Senneerkuppam", "lat": 13.06853, "lng": 80.11239}, {"id": "297", "name": "SenthilNagar", "lat": 13.1204, "lng": 80.14007}, {"id": "3215", "name": "Shanthi Theater", "lat": 13.067212, "lng": 80.270482}, {"id": "3171", "name": "Sharma Nagar", "lat": 13.120331, "lng": 80.254626}, {"id": "105", "name": "Shivashanmugapuram", "lat": 13.09476, "lng": 80.25107}, {"id": "352", "name": "SholavaramP.S.", "lat": 13.24103, "lng": 80.16028}, {"id": "3632", "name": "Sholinganallaur", "lat": 12.9031, "lng": 80.227892}, {"id": "3507", "name": "Sholinganallur", "lat": 12.899351, "lng": 80.227919}, {"id": "4018", "name": "SHOZHINGANALLUR", "lat": 12.898795, "lng": 80.22792}, {"id": "2011", "name": "Shozinganallaur", "lat": 12.901785, "lng": 80.227848}, {"id": "376", "name": "Sidco", "lat": 13.13097, "lng": 80.25135}, {"id": "3232", "name": "SIDCO Bus Stop", "lat": 13.103105, "lng": 80.199343}, {"id": "403", "name": "SidcoNagar", "lat": 13.10876, "lng": 80.20552}, {"id": "3417", "name": "SIET", "lat": 13.0355, "lng": 80.246066}, {"id": "3595", "name": "Simpson/P.Orr & Sons", "lat": 13.07067, "lng": 80.27423}, {"id": "3415", "name": "Simpson/P.Orr Sons", "lat": 13.070893, "lng": 80.273893}, {"id": "4137", "name": "Singaperumal_Kovil", "lat": 12.760952, "lng": 80.003396}, {"id": "4118", "name": "Singa_Perumal_Kovil", "lat": 12.76102, "lng": 80.00363}, {"id": "2007", "name": "SIPCOT", "lat": 12.830205, "lng": 80.229705}, {"id": "3031", "name": "Sipcot IT park - first stop of 1103", "lat": 12.82592, "lng": 80.217239}, {"id": "3032", "name": "Sipcot IT park - second stop of 1103", "lat": 12.8318, "lng": 80.229111}, {"id": "3001", "name": "Sipcot IT Park_Cutservice stop", "lat": 12.827929, "lng": 80.219267}, {"id": "4067", "name": "Siringeri_Madam", "lat": 13.027022, "lng": 80.259054}, {"id": "4037", "name": "SIRUSERI", "lat": 12.833147, "lng": 80.228796}, {"id": "3694", "name": "Sivan Koil", "lat": 12.933014, "lng": 80.236143}, {"id": "4145", "name": "Sivanandha_Gurukulam", "lat": 12.814611, "lng": 80.032767}, {"id": "424", "name": "SlumClearanceBoard", "lat": 13.12299, "lng": 80.27746}, {"id": "353", "name": "Sothupermedu", "lat": 13.25415, "lng": 80.17127}, {"id": "666", "name": "SouthBoagS.EastBoag", "lat": 13.035, "lng": 80.24191}, {"id": "51", "name": "SozhinganallurP.U.Office", "lat": 12.90117, "lng": 80.22569}, {"id": "3419", "name": "Srinivasa", "lat": 13.031119, "lng": 80.223744}, {"id": "3221", "name": "Srinivasa Nagar", "lat": 12.964632, "lng": 80.211211}, {"id": "4149", "name": "Srinivasapuram", "lat": 12.8403, "lng": 80.05569}, {"id": "9", "name": "SrinivasaTheater", "lat": 13.031, "lng": 80.22432}, {"id": "402", "name": "SRINIVASA_NAGAR", "lat": 13.11863, "lng": 80.20646}, {"id": "906", "name": "SriRamEngg.College", "lat": 13.113, "lng": 79.99343}, {"id": "831", "name": "SriSankaraHealthCentre", "lat": 12.96617, "lng": 80.1269}, {"id": "4146", "name": "SRM_Potheri", "lat": 12.820195, "lng": 80.036704}, {"id": "3241", "name": "SRP Tools", "lat": 12.980148, "lng": 80.252121}, {"id": "4006", "name": "SRP_TOOLS", "lat": 12.978618, "lng": 80.252599}, {"id": "3581", "name": "St Thomas Mount", "lat": 12.994598, "lng": 80.200311}, {"id": "3455", "name": "St Thomas Mount R.S", "lat": 12.994658, "lng": 80.200231}, {"id": "3369", "name": "St.Thomas mount post office", "lat": 13.001548, "lng": 80.196275}, {"id": "3542", "name": "Sterling Road", "lat": 13.064227, "lng": 80.24352}, {"id": "614", "name": "SterlingRoad", "lat": 13.06501, "lng": 80.23993}, {"id": "757", "name": "StThomasMountPo", "lat": 13.00177, "lng": 80.20009}, {"id": "626", "name": "SunTheater", "lat": 13.04784, "lng": 80.24543}, {"id": "298", "name": "Surapedu", "lat": 13.1446, "lng": 80.18818}, {"id": "3579", "name": "Surendara Nagar", "lat": 12.986796, "lng": 80.197302}, {"id": "3366", "name": "T nagar", "lat": 13.03409, "lng": 80.23001}, {"id": "3292", "name": "T. Nagar Bus Terminus", "lat": 13.03376, "lng": 80.230514}, {"id": "542", "name": "T.B.Institute", "lat": 13.07225, "lng": 80.25187}, {"id": "849", "name": "T.B.Sanatorium", "lat": 12.93831, "lng": 80.12896}, {"id": "476", "name": "T.N.C.F", "lat": 13.08138, "lng": 80.27818}, {"id": "135", "name": "T.V.K.Nagar", "lat": 13.12119, "lng": 80.23255}, {"id": "576", "name": "T.V.S", "lat": 13.05963, "lng": 80.25961}, {"id": "382", "name": "T.V.TRlyGate", "lat": 13.15559, "lng": 80.29199}, {"id": "860", "name": "Tambaram", "lat": 12.92518, "lng": 80.11552}, {"id": "3201", "name": "Tambaram Depot", "lat": 12.926966, "lng": 80.11798}, {"id": "3529", "name": "Tambaram East", "lat": 12.92355, "lng": 80.11668}, {"id": "3145", "name": "Tambaram Mepz/Sanatorium", "lat": 12.936701, "lng": 80.127436}, {"id": "879", "name": "TambaramEast", "lat": 12.92351, "lng": 80.11788}, {"id": "873", "name": "TambaramTownLimit", "lat": 12.92552, "lng": 80.1008}, {"id": "4095", "name": "Tambaram_Depot", "lat": 12.9256, "lng": 80.11722}, {"id": "4079", "name": "Tambaram_Mepz/Sanatorium", "lat": 12.937008, "lng": 80.128093}, {"id": "4080", "name": "Tambaram_West", "lat": 12.928088, "lng": 80.119034}, {"id": "4141", "name": "Tansi", "lat": 12.790542, "lng": 80.017038}, {"id": "3297", "name": "Tansi Nagar", "lat": 12.978672, "lng": 80.225207}, {"id": "1505", "name": "TARAMANI", "lat": 12.986035, "lng": 80.241066}, {"id": "2099", "name": "Taramsg", "lat": 12.457, "lng": 79.4363}, {"id": "3423", "name": "Tata Udipi", "lat": 13.036754, "lng": 80.198443}, {"id": "3268", "name": "Tata Udipi/Amman Kovil", "lat": 13.036921, "lng": 80.198309}, {"id": "3405", "name": "taylors road", "lat": 13.076744, "lng": 80.238836}, {"id": "507", "name": "TaylorsRoad", "lat": 13.07676, "lng": 80.23813}, {"id": "3263", "name": "TCS Karapakkam", "lat": 12.919783, "lng": 80.230015}, {"id": "4015", "name": "TCS_KARAPAKKAM", "lat": 12.919613, "lng": 80.230232}, {"id": "659", "name": "TelegraphOffice", "lat": 13.04274, "lng": 80.23607}, {"id": "200034", "name": "Test stop", "lat": 13.11863, "lng": 80.20646}, {"id": "4148", "name": "Thailavaram", "lat": 12.83087, "lng": 80.045908}, {"id": "3481", "name": "Thamaraipakkam Sivsn Koil", "lat": 13.02538, "lng": 80.22974}, {"id": "368", "name": "ThambuchettySt", "lat": 13.10275, "lng": 80.29059}, {"id": "124", "name": "Thandarai", "lat": 13.11208, "lng": 80.06235}, {"id": "154", "name": "Thangal", "lat": 13.14573, "lng": 80.29731}, {"id": "3240", "name": "Tharamani", "lat": 12.981417, "lng": 80.242552}, {"id": "3244", "name": "Tharamani Pillaiyar Koil/Periyar Nagar", "lat": 12.981187, "lng": 80.238875}, {"id": "141", "name": "TheagarayaCollege", "lat": 13.11662, "lng": 80.28379}, {"id": "3758", "name": "Theradi", "lat": 13.16012, "lng": 80.30146}, {"id": "3551", "name": "Thillaiganga Nagar", "lat": 12.99127, "lng": 80.19456}, {"id": "3703", "name": "Thirisulam/Airport", "lat": 12.979434, "lng": 80.16232}, {"id": "3349", "name": "Thiru Nagar", "lat": 13.0576, "lng": 80.21136}, {"id": "802", "name": "Thirumalisai", "lat": 13.05373, "lng": 80.0633}, {"id": "492", "name": "Thirumangalam", "lat": 13.08541, "lng": 80.19848}, {"id": "3656", "name": "Thirumanglam 2", "lat": 13.084393, "lng": 80.198643}, {"id": "338", "name": "Thirumullaivoayl", "lat": 13.13076, "lng": 80.13306}, {"id": "856", "name": "Thiruneermalai", "lat": 12.9645, "lng": 80.11634}, {"id": "280", "name": "Thirunindravoor", "lat": 13.12446, "lng": 80.03143}, {"id": "3514", "name": "Thiruporur Murugan Temple", "lat": 12.725305, "lng": 80.188154}, {"id": "782", "name": "ThirusoolamNationalAirp", "lat": 12.98043, "lng": 80.16495}, {"id": "4136", "name": "Thirutheri", "lat": 12.754956, "lng": 80.001041}, {"id": "54", "name": "Thiruvanmiyur", "lat": 12.98688, "lng": 80.2589}, {"id": "3225", "name": "Thiruvanmiyur Depot", "lat": 12.987434, "lng": 80.259164}, {"id": "3295", "name": "Thiruvanmiyur Terminus", "lat": 12.987261, "lng": 80.259121}, {"id": "325", "name": "Thiruverkadu", "lat": 13.06906, "lng": 80.1242}, {"id": "364", "name": "ThiruvetriyurB.S", "lat": 13.17224, "lng": 80.30546}, {"id": "919", "name": "THORAPAKKAM", "lat": 12.951034, "lng": 80.241265}, {"id": "3456", "name": "Thorappakkam Tea Shop", "lat": 12.952012, "lng": 80.242241}, {"id": "3116", "name": "Thousand Lights/Church Park", "lat": 13.056747, "lng": 80.256667}, {"id": "4010", "name": "THURAIPAKKAM", "lat": 12.951706, "lng": 80.241742}, {"id": "3317", "name": "Thuraipakkam Tea Stall/Shivaram", "lat": 12.951034, "lng": 80.241265}, {"id": "3644", "name": "Tidel Park", "lat": 12.987821, "lng": 80.251712}, {"id": "3253", "name": "Tidel Park Railway Station", "lat": 12.987821, "lng": 80.251712}, {"id": "3000", "name": "Tidel park to ECR turning", "lat": 12.98806, "lng": 80.251846}, {"id": "2008", "name": "TIDEL_PARK", "lat": 12.98948, "lng": 80.250859}, {"id": "3202", "name": "Tirusulam/Airport", "lat": 12.980011, "lng": 80.162639}, {"id": "264", "name": "TNagar", "lat": 13.03495, "lng": 80.23051}, {"id": "455", "name": "Tollgate", "lat": 13.14178, "lng": 80.29581}, {"id": "458", "name": "Tondaiayrpet", "lat": 13.12623, "lng": 80.2904}, {"id": "569", "name": "TriplicaneO.T(Corpn.Sc", "lat": 13.05923, "lng": 80.2715}, {"id": "620", "name": "Trustpuram", "lat": 13.05339, "lng": 80.22294}, {"id": "3197", "name": "TVS Lucas", "lat": 13.101167, "lng": 80.190176}, {"id": "3319", "name": "TVS/HDFC", "lat": 13.059252, "lng": 80.259749}, {"id": "3264", "name": "TVS/Spencers", "lat": 13.059521, "lng": 80.259737}, {"id": "3757", "name": "TVT market", "lat": 13.16374, "lng": 80.30252}, {"id": "191", "name": "U.S.I.S.", "lat": 13.05055, "lng": 80.25221}, {"id": "3234", "name": "UCO Bank", "lat": 13.103606, "lng": 80.186248}, {"id": "3266", "name": "Udhayam Theatre", "lat": 13.032637, "lng": 80.211897}, {"id": "462", "name": "UnivercityClub", "lat": 13.09469, "lng": 80.28603}, {"id": "3560", "name": "Urapakkam School", "lat": 12.868251, "lng": 80.075748}, {"id": "3705", "name": "Urapakkam Tea Kadai", "lat": 12.861996, "lng": 80.073506}, {"id": "3630", "name": "Urapakkam Tea Kadai Bus Stop", "lat": 12.862166, "lng": 80.073404}, {"id": "4153", "name": "Urapakkam_School", "lat": 12.868251, "lng": 80.075748}, {"id": "4152", "name": "Urapakkam_Tea_ Kadai", "lat": 12.862166, "lng": 80.073404}, {"id": "4103", "name": "Urapakkam_Tea_Kadai", "lat": 12.861996, "lng": 80.073506}, {"id": "611", "name": "UthamarGandhisalai(Corp", "lat": 13.06384, "lng": 80.24337}, {"id": "61", "name": "UthandiVillage", "lat": 12.87607, "lng": 80.24311}, {"id": "3697", "name": "UTI Bank", "lat": 12.964935, "lng": 80.188214}, {"id": "3370", "name": "UTI Bank Bus Stop", "lat": 12.965905, "lng": 80.188481}, {"id": "585", "name": "V.House", "lat": 13.05038, "lng": 80.28053}, {"id": "571", "name": "V.HouseP.S", "lat": 13.05242, "lng": 80.27409}, {"id": "586", "name": "V.HouseTerminus", "lat": 13.05072, "lng": 80.27925}, {"id": "113", "name": "V.Nagar", "lat": 13.10556, "lng": 80.27989}, {"id": "792", "name": "Vaanagaram", "lat": 13.06134, "lng": 80.15153}, {"id": "3148", "name": "Vadapalani", "lat": 13.04839, "lng": 80.211944}, {"id": "3709", "name": "Vadapalani 100 Feet Road", "lat": 13.047, "lng": 80.212036}, {"id": "3564", "name": "Vadapalani BS", "lat": 13.04928, "lng": 80.2068}, {"id": "3660", "name": "Vadapalani Bus Stop", "lat": 13.048887, "lng": 80.206812}, {"id": "3571", "name": "Vadapalani Signal/100 Feet Road", "lat": 13.049779, "lng": 80.211695}, {"id": "3491", "name": "Vadapalani Temple/Vadapalani", "lat": 13.049688, "lng": 80.212144}, {"id": "640", "name": "VadapalaniB.S", "lat": 13.04934, "lng": 80.20856}, {"id": "355", "name": "Vadaperumbakkam", "lat": 13.17494, "lng": 80.21547}, {"id": "820", "name": "Valasaravakkam", "lat": 13.04139, "lng": 80.17432}, {"id": "162", "name": "ValliyurSchool", "lat": 13.21697, "lng": 80.00493}, {"id": "3128", "name": "Vanavil", "lat": 13.040588, "lng": 80.247036}, {"id": "3596", "name": "Vanavil/Anna Arivalayam", "lat": 13.041556, "lng": 80.247512}, {"id": "890", "name": "Vandaloor", "lat": 12.89297, "lng": 80.08647}, {"id": "3457", "name": "Vandaloor Gate", "lat": 12.892971, "lng": 80.086472}, {"id": "3501", "name": "Vandaloor Zoo", "lat": 12.880858, "lng": 80.080972}, {"id": "74", "name": "VandaloorZoo", "lat": 12.87933, "lng": 80.08046}, {"id": "4155", "name": "Vandaloor_Gate", "lat": 12.89351, "lng": 80.08641}, {"id": "4101", "name": "Vandaloor_Zoo", "lat": 12.880858, "lng": 80.080972}, {"id": "3631", "name": "Vandalur Zoo Bus Stand", "lat": 12.880288, "lng": 80.080472}, {"id": "4154", "name": "Vandalur_Zoo", "lat": 12.880288, "lng": 80.080472}, {"id": "4036", "name": "VANIYAMCHAVADI", "lat": 12.826298, "lng": 80.231276}, {"id": "3428", "name": "Vannandurai", "lat": 12.996137, "lng": 80.262838}, {"id": "3327", "name": "Vannankulam", "lat": 13.04302, "lng": 80.12271}, {"id": "759", "name": "Vanuvambedu", "lat": 12.98557, "lng": 80.19736}, {"id": "3458", "name": "Vanuvampet", "lat": 12.981692, "lng": 80.195758}, {"id": "793", "name": "VaradarajaPuram", "lat": 13.04704, "lng": 80.07943}, {"id": "3622", "name": "Vasanthi", "lat": 13.093371, "lng": 80.258968}, {"id": "75", "name": "VazhuthalambeduRd.Jn", "lat": 12.96776, "lng": 80.10226}, {"id": "348", "name": "Vazhuthunaimedu", "lat": 13.26359, "lng": 80.22972}, {"id": "410", "name": "Veenus", "lat": 13.114, "lng": 80.23504}, {"id": "48", "name": "VeerabadraNagar", "lat": 12.90519, "lng": 80.18824}, {"id": "3575", "name": "Veeramani Nagar", "lat": 12.944788, "lng": 80.182938}, {"id": "282", "name": "Veerapuram", "lat": 13.18605, "lng": 80.08368}, {"id": "3304", "name": "Velachery", "lat": 12.974667, "lng": 80.2205}, {"id": "3380", "name": "Velachery Railway Station", "lat": 12.970953, "lng": 80.218811}, {"id": "3216", "name": "Velachery Terminus", "lat": 12.976218, "lng": 80.221504}, {"id": "739", "name": "VelacheryHospital", "lat": 12.97869, "lng": 80.22148}, {"id": "741", "name": "VelacheryVijayaNagar", "lat": 12.97554, "lng": 80.22058}, {"id": "257", "name": "Velangadupakkam", "lat": 13.19675, "lng": 80.2211}, {"id": "3206", "name": "Velankanni Koil/Besant Nagar Church", "lat": 12.996111, "lng": 80.267669}, {"id": "786", "name": "Velappanchavadi", "lat": 13.0615, "lng": 80.13814}, {"id": "843", "name": "Vellaikal", "lat": 12.93413, "lng": 80.18183}, {"id": "3573", "name": "Vellakal Bus Stop", "lat": 12.931413, "lng": 80.181479}, {"id": "339", "name": "VellalaStreet", "lat": 13.10329, "lng": 80.18629}, {"id": "276", "name": "VengalCrossRoad", "lat": 13.16661, "lng": 80.09841}, {"id": "69", "name": "VengambakkamVillage", "lat": 12.86852, "lng": 80.13053}, {"id": "293", "name": "Vengatapuram", "lat": 13.11864, "lng": 80.15754}, {"id": "3727", "name": "Vepery", "lat": 13.085368, "lng": 80.262829}, {"id": "126", "name": "Veppampattu", "lat": 13.12521, "lng": 79.99892}, {"id": "125", "name": "VeppumpattuPuliyamaram", "lat": 13.12654, "lng": 80.01278}, {"id": "3229", "name": "Veterinary Hospital", "lat": 13.085226, "lng": 80.265727}, {"id": "615", "name": "VeterinaryHospital", "lat": 13.05251, "lng": 80.24144}, {"id": "58", "name": "Vettuvankanni", "lat": 12.93781, "lng": 80.25247}, {"id": "4059", "name": "VHS", "lat": 13.003507, "lng": 80.247433}, {"id": "166", "name": "Vichoor", "lat": 13.21808, "lng": 80.24624}, {"id": "3472", "name": "Vidhyodaya School", "lat": 13.050829, "lng": 80.240341}, {"id": "639", "name": "Vidyodaya", "lat": 13.05139, "lng": 80.24062}, {"id": "3664", "name": "Vijay Nagar", "lat": 12.977206, "lng": 80.222642}, {"id": "3381", "name": "Vijaya Nagar Bus Stand", "lat": 12.975873, "lng": 80.220999}, {"id": "3568", "name": "Vijayanagaram Bus Stand", "lat": 12.91847, "lng": 80.17674}, {"id": "3156", "name": "Vijaykanth Chathiram", "lat": 13.074195, "lng": 80.200131}, {"id": "320", "name": "VilinjambakkamAmmanKoil", "lat": 13.11605, "lng": 80.09647}, {"id": "3677", "name": "Villivakkam/Kalpana", "lat": 13.102759, "lng": 80.208619}, {"id": "299", "name": "Vinayagapuram", "lat": 13.13896, "lng": 80.20659}, {"id": "336", "name": "VinayagarKoil", "lat": 13.10113, "lng": 80.16329}, {"id": "645", "name": "Virugambakkam", "lat": 13.04666, "lng": 80.19234}, {"id": "4147", "name": "VPT/Valliammai/SRM", "lat": 12.826999, "lng": 80.041703}, {"id": "3724", "name": "Vyasarapadi Market", "lat": 13.115649, "lng": 80.265757}, {"id": "3513", "name": "Vyasarapadi Market/Pillar", "lat": 13.114484, "lng": 80.265676}, {"id": "432", "name": "Vyasarpadi", "lat": 13.11426, "lng": 80.26345}, {"id": "3217", "name": "V_House", "lat": 13.050348, "lng": 80.280808}, {"id": "3598", "name": "War_Memorial", "lat": 13.07468, "lng": 80.28623}, {"id": "400", "name": "WATERPIPE_THANTHANKUPPAM", "lat": 13.12061, "lng": 80.19899}, {"id": "3637", "name": "Wavin", "lat": 13.088513, "lng": 80.172038}, {"id": "3614", "name": "Wavin Bus Stop", "lat": 13.088657, "lng": 80.171542}, {"id": "578", "name": "WESLEY_H.S.", "lat": 13.05923, "lng": 80.26554}, {"id": "3468", "name": "Whites Road/Express Avenue/ TVS", "lat": 13.0604, "lng": 80.26548}, {"id": "3754", "name": "Wimco", "lat": 13.17889, "lng": 80.30556}, {"id": "709", "name": "WOMEN_POLYTECHNIC", "lat": 12.99889, "lng": 80.24861}, {"id": "3242", "name": "WPT/Indira Nagar", "lat": 12.997355, "lng": 80.249087}, {"id": "220", "name": "Y.M.I.A", "lat": 13.04454, "lng": 80.26744}, {"id": "3321", "name": "Yellow Pages/Radha Krishnan Street/YMCA", "lat": 13.04448, "lng": 80.268625}];
+
+    // Saved coords for from/to
+    let fromCoords = null, toCoords = null;
+    // Nearby stops cache
+    let nearbyStopsCache = [];
+
+    /* ── helpers ── */
+    function busIcon() {
+      return `<svg viewBox="0 0 24 24" width="14" height="14" fill="none">
+        <rect x="5" y="6" width="14" height="12" rx="2" fill="#43866B"/>
+        <rect x="7" y="9" width="4" height="4" rx="0.5" fill="white"/>
+        <rect x="13" y="9" width="4" height="4" rx="0.5" fill="white"/>
+      </svg>`;
+    }
+
+    function showToast(msg, isError = true) {
+      let t = document.getElementById('api-toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'api-toast';
+        t.style.cssText =
+          'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);' +
+          'color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;' +
+          'z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.25);';
+        document.body.appendChild(t);
+      }
+      t.style.background = isError ? '#e53e3e' : '#43866B';
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 4000);
+    }
+
+    /* ── Dropdown renderer ── */
+    function closeDropdown(el) { el.classList.remove('open'); }
+    function closeAll() {
+      document.querySelectorAll('.suggestions-dropdown').forEach(closeDropdown);
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.input-wrapper') && !e.target.closest('.nearby-btn-inline')) closeAll();
+    });
+
+    /* ── Build a suggestion item ── */
+    function makeSuggestion({ label, meta, icon, onSelect }) {
+      const div = document.createElement('div');
+      div.className = 'suggestion-item';
+      div.innerHTML = `
+        <div class="sug-icon nearby">${icon}</div>
+        <div>
+          <div>${label}</div>
+          ${meta ? `<div class="sug-meta">${meta}</div>` : ''}
+        </div>`;
+      div.addEventListener('mousedown', e => { e.preventDefault(); onSelect(); });
+      return div;
+    }
+
+    /* ── Full local stop search (for End field) ── */
+    function filterAllStops(query) {
+      if (!query || query.length < 1) return [];
+      const q = query.toUpperCase().trim();
+      const tokens = q.split(/\s+/);
+      const scored = [];
+      for (const stop of ALL_STOPS) {
+        const name = stop.name.toUpperCase();
+        let score = 0;
+        if (name.startsWith(q)) score = 3;
+        else if (tokens.every(t => name.includes(t))) score = 2;
+        else if (tokens[0] && name.includes(tokens[0])) score = 1;
+        if (score > 0) scored.push({stop, score});
+      }
+      scored.sort((a,b) => b.score - a.score || a.stop.name.length - b.stop.name.length);
+      return scored.slice(0, 10).map(x => x.stop);
+    }
+
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      const idx = text.toUpperCase().indexOf(query.toUpperCase().trim());
+      if (idx === -1) return text;
+      return text.slice(0, idx) +
+        '<strong style="color:#2e7d62;">' + text.slice(idx, idx + query.trim().length) + '</strong>' +
+        text.slice(idx + query.trim().length);
+    }
+
+    /* ── Nearby stops loader ── */
+    async function fetchNearbyStops(lat, lon) {
+      const res = await fetch(`${API_BASE}/nearby?lat=${lat}&lon=${lon}&radius=2`);
+      if (!res.ok) throw new Error('API error');
+      return res.json();
+    }
+
+    /* ── Show nearby stops in a dropdown ── */
+    function showNearbyInDropdown(dropdownEl, inputEl, coordSetter, stops) {
+      const label = document.createElement('div');
+      label.className = 'suggestion-group-label';
+      label.textContent = `📍 Nearby Stops (${stops.length})`;
+      dropdownEl.innerHTML = '';
+      dropdownEl.appendChild(label);
+      stops.slice(0, 8).forEach(stop => {
+        const routeText = stop.routes?.slice(0, 4).join(', ') || '';
+        const item = makeSuggestion({
+          label: stop.stop_name,
+          meta: `${stop.distance_km} km away${routeText ? ' · Buses: ' + routeText : ''}`,
+          icon: busIcon(),
+          onSelect: () => {
+            inputEl.value = stop.stop_name;
+            coordSetter({ lat: stop.lat, lon: stop.lon, name: stop.stop_name });
+            closeDropdown(dropdownEl);
+          }
+        });
+        dropdownEl.appendChild(item);
+      });
+      dropdownEl.classList.add('open');
+    }
+
+    /* ── Start field: API search autocomplete ── */
+    function setupStartAutocomplete(inputEl, dropdownEl, coordSetter) {
+      let timer;
+      inputEl.addEventListener('input', function () {
+        clearTimeout(timer);
+        const q = this.value.trim();
+        if (q.length < 2) { closeDropdown(dropdownEl); return; }
+        timer = setTimeout(async () => {
+          try {
+            const results = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`).then(r => r.json());
+            dropdownEl.innerHTML = '';
+            if (!results.length) {
+              dropdownEl.innerHTML = '<div class="suggestion-empty">No matching stops found</div>';
+              dropdownEl.classList.add('open');
+              return;
+            }
+            const label = document.createElement('div');
+            label.className = 'suggestion-group-label';
+            label.textContent = 'Bus Stops';
+            dropdownEl.appendChild(label);
+            results.slice(0, 8).forEach(stop => {
+              const item = makeSuggestion({
+                label: stop.stop_name,
+                meta: `Stop #${stop.stop_id}`,
+                icon: busIcon(),
+                onSelect: () => {
+                  inputEl.value = stop.stop_name;
+                  coordSetter({ lat: stop.lat, lon: stop.lon, name: stop.stop_name });
+                  closeDropdown(dropdownEl);
+                }
+              });
+              dropdownEl.appendChild(item);
+            });
+            dropdownEl.classList.add('open');
+          } catch { /* silent – backend may not be running */ }
+        }, 220);
+      });
+      inputEl.addEventListener('focus', function () {
+        if (this.value.length >= 2) dropdownEl.classList.add('open');
+      });
+    }
+
+    /* ── End field: full local dataset search (all 944 stops, no backend needed) ── */
+    function setupEndAutocomplete(inputEl, dropdownEl, coordSetter) {
+      let timer;
+      inputEl.addEventListener('input', function () {
+        clearTimeout(timer);
+        const q = this.value.trim();
+        if (q.length < 1) { closeDropdown(dropdownEl); return; }
+        timer = setTimeout(() => {
+          const results = filterAllStops(q);
+          dropdownEl.innerHTML = '';
+          if (!results.length) {
+            dropdownEl.innerHTML = '<div class="suggestion-empty">No matching stops found</div>';
+            dropdownEl.classList.add('open');
+            return;
+          }
+          const label = document.createElement('div');
+          label.className = 'suggestion-group-label';
+          label.textContent = `All Bus Stops · ${results.length} found`;
+          dropdownEl.appendChild(label);
+          results.forEach(stop => {
+            const item = makeSuggestion({
+              label: highlightMatch(stop.name, q),
+              meta: 'Stop #' + stop.id,
+              icon: busIcon(),
+              onSelect: () => {
+                inputEl.value = stop.name;
+                coordSetter({ lat: stop.lat, lon: stop.lng, name: stop.name });
+                closeDropdown(dropdownEl);
+                // Auto-focus search btn after picking destination
+                document.getElementById('searchBtn').focus();
+              }
+            });
+            dropdownEl.appendChild(item);
+          });
+          dropdownEl.classList.add('open');
+        }, 120);
+      });
+      // Re-open on focus if something is typed
+      inputEl.addEventListener('focus', function () {
+        const q = this.value.trim();
+        if (q.length >= 1) {
+          const results = filterAllStops(q);
+          if (results.length) dropdownEl.classList.add('open');
+        } else if (nearbyStopsCache.length) {
+          // Show nearby stops as quick destination picks
+          dropdownEl.classList.add('open');
+        }
+      });
+      // Keyboard nav
+      inputEl.addEventListener('keydown', function(e) {
+        const items = dropdownEl.querySelectorAll('.suggestion-item');
+        const current = dropdownEl.querySelector('.suggestion-item.highlighted');
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (!current) { items[0]?.classList.add('highlighted'); return; }
+          current.classList.remove('highlighted');
+          (current.nextElementSibling || items[0]).classList.add('highlighted');
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (!current) { items[items.length-1]?.classList.add('highlighted'); return; }
+          current.classList.remove('highlighted');
+          (current.previousElementSibling || items[items.length-1]).classList.add('highlighted');
+        } else if (e.key === 'Enter' && current) {
+          current.dispatchEvent(new MouseEvent('mousedown'));
+        } else if (e.key === 'Escape') {
+          closeDropdown(dropdownEl);
+        }
+      });
+    }
+
+    /* ── "Near Me" button on Start input ── */
+    document.getElementById('useLocationBtn').addEventListener('click', async function () {
+      const btn = this;
+      const startInput = document.getElementById('start');
+      const startDropdown = document.getElementById('startDropdown');
+      if (!('geolocation' in navigator)) { showToast('Geolocation not supported.'); return; }
+      btn.textContent = '⏳ Locating…';
+      btn.disabled = true;
+      navigator.geolocation.getCurrentPosition(async pos => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        fromCoords = { lat, lon, name: 'My Location' };
+        startInput.value = `My Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+        btn.textContent = '📍 Near Me';
+        btn.disabled = false;
+        try {
+          startDropdown.innerHTML = '<div class="suggestion-group-label">⏳ Loading nearby stops…</div>';
+          startDropdown.classList.add('open');
+          const stops = await fetchNearbyStops(lat, lon);
+          nearbyStopsCache = stops;
+          showNearbyInDropdown(startDropdown, startInput, s => { fromCoords = s; }, stops);
+
+          // Pre-fill end dropdown with nearby stops as quick destination options
+          const endDropdown = document.getElementById('endDropdown');
+          const endInput = document.getElementById('end');
+          if (endInput.value.trim() === '') {
+            const endLabel = document.createElement('div');
+            endLabel.className = 'suggestion-group-label';
+            endLabel.textContent = '📍 Nearby stops — or type any destination';
+            endDropdown.innerHTML = '';
+            endDropdown.appendChild(endLabel);
+            stops.slice(0, 8).forEach(stop => {
+              const routeText = stop.routes?.slice(0, 4).join(', ') || '';
+              const item = makeSuggestion({
+                label: stop.stop_name,
+                meta: `${stop.distance_km} km away · Buses: ${routeText}`,
+                icon: busIcon(),
+                onSelect: () => {
+                  endInput.value = stop.stop_name;
+                  toCoords = { lat: stop.lat, lon: stop.lon, name: stop.stop_name };
+                  closeDropdown(endDropdown);
+                }
+              });
+              endDropdown.appendChild(item);
+            });
+            // Don't auto-open end dropdown; let user click it
+          }
+        } catch {
+          showToast('Could not load nearby stops. Is the backend running?');
+          closeDropdown(startDropdown);
+        }
+      }, () => {
+        showToast('Could not get location. Please allow location access.', true);
+        btn.textContent = '📍 Near Me';
+        btn.disabled = false;
+      });
+    });
+
+    /* ── Wire autocomplete ── */
+    setupStartAutocomplete(
+      document.getElementById('start'),
+      document.getElementById('startDropdown'),
+      s => { fromCoords = s; }
+    );
+    setupEndAutocomplete(
+      document.getElementById('end'),
+      document.getElementById('endDropdown'),
+      s => { toCoords = s; }
+    );
+
+    /* ── Search button ── */
+    document.getElementById('searchBtn').addEventListener('click', function () {
+      const startInput = document.getElementById('start');
+      const endInput   = document.getElementById('end');
+      const fromVal = startInput.value.trim();
+      const toVal   = endInput.value.trim();
+      if (!fromVal || fromVal === 'My Location') {
+        showToast('Please enter or select your starting stop.', true);
+        startInput.focus(); return;
+      }
+      if (!toVal) {
+        showToast('Please enter your destination stop.', true);
+        endInput.focus(); return;
+      }
+      this.textContent = 'Searching…';
+      this.disabled = true;
+      const ps = new URLSearchParams({ from: fromVal, to: toVal });
+      if (fromCoords) { ps.set('fromLat', fromCoords.lat); ps.set('fromLon', fromCoords.lon); }
+      if (toCoords)   { ps.set('toLat',   toCoords.lat);   ps.set('toLon',   toCoords.lon); }
+      setTimeout(() => { window.location.href = 'search-results.html?' + ps.toString(); }, 350);
+    });
+
+    /* ── "Bus Stops Near Me" hero button ── */
+    document.getElementById('nearbyBtn').addEventListener('click', function () {
+      if (!('geolocation' in navigator)) { alert('Geolocation not supported.'); return; }
+      const h2 = this.querySelector('h2');
+      h2.textContent = 'Getting Location…';
+      this.style.opacity = '0.7';
+      navigator.geolocation.getCurrentPosition(
+        p => { window.location.href = `nearby-stops.html?lat=${p.coords.latitude}&lon=${p.coords.longitude}`; },
+        () => { alert('Enable location services and try again.'); h2.textContent = 'Bus Stops Near Me'; this.style.opacity = '1'; }
+      );
+    });
+
+    /* ── Enter key on either input ── */
+    ['start','end'].forEach(id => {
+      document.getElementById(id).addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+          const dd = document.getElementById(id + 'Dropdown');
+          const highlighted = dd?.querySelector('.suggestion-item.highlighted');
+          if (!highlighted) document.getElementById('searchBtn').click();
+        }
+      });
+    });
+
+    /* ── Map hover ── */
+    const mapContainer = document.querySelector('.map-container');
+    if (mapContainer) {
+      mapContainer.style.cursor = 'pointer';
+      mapContainer.addEventListener('mouseenter', function () {
+        this.style.transform = 'scale(1.02)';
+        this.style.transition = 'transform 0.3s ease';
+      });
+      mapContainer.addEventListener('mouseleave', function () { this.style.transform = ''; });
+    }
+  </script>
+</body>
+</html>
